@@ -66,7 +66,7 @@ const handleMenuClick = (type) => {
 <style lang="scss" scoped>
 .container {
   min-height: 100vh;
-  background-color: #F5F7FA;
+  background-color: $uni-bg-color;
   padding: 20px;
 }
 
@@ -79,16 +79,17 @@ const handleMenuClick = (type) => {
   margin-top: 40px;
   margin-bottom: 24px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  border: 1px solid $uni-border-color;
   
   .avatar-area {
     margin-right: 16px;
     .avatar {
       width: 64px;
       height: 64px;
-      background: #F3F4F6;
+      background: $uni-color-primary-light;
       border-radius: 32px;
       border: 2px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(130, 201, 160, 0.2);
     }
   }
   
@@ -97,21 +98,21 @@ const handleMenuClick = (type) => {
     .username {
       font-size: 18px;
       font-weight: 700;
-      color: #1A1D26;
+      color: $uni-text-color;
       display: block;
       margin-bottom: 4px;
     }
     .user-id {
       font-size: 12px;
-      color: #9CA3AF;
+      color: $uni-text-color-grey;
     }
   }
   
   .edit-btn {
     font-size: 12px;
-    color: #6B7280;
+    color: $uni-text-color-grey;
     padding: 4px 12px;
-    background: #F9FAFB;
+    background: $uni-bg-color;
     border-radius: 12px;
   }
 }
@@ -121,13 +122,14 @@ const handleMenuClick = (type) => {
   border-radius: 16px;
   padding: 8px 0;
   box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  border: 1px solid $uni-border-color;
   
   .menu-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
-    border-bottom: 1px solid #F3F4F6;
+    border-bottom: 1px solid $uni-border-color;
     
     &:last-child {
       border-bottom: none;
@@ -144,18 +146,18 @@ const handleMenuClick = (type) => {
       }
       .label {
         font-size: 15px;
-        color: #1A1D26;
+        color: $uni-text-color;
         font-weight: 500;
       }
     }
     
     .arrow {
-      color: #D1D5DB;
+      color: $uni-text-color-grey;
       font-size: 14px;
     }
     
     &:active {
-      background: #F9FAFB;
+      background: $uni-bg-color;
     }
   }
 }

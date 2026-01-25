@@ -5,6 +5,13 @@ export default defineConfig({
   plugins: [
     uni(),
   ],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '@import "@/uni.scss";'
+      }
+    }
+  },
   server: {
     host: '0.0.0.0',
   },

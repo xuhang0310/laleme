@@ -235,7 +235,7 @@ onShow(() => {
 <style lang="scss" scoped>
 .container {
   min-height: 100vh;
-  background-color: #F5F7FA;
+  background-color: #FAFAFA;
   position: relative;
   padding-bottom: 100px;
 }
@@ -246,7 +246,7 @@ onShow(() => {
   left: 0;
   width: 100%;
   height: 220px;
-  background: linear-gradient(180deg, #E0EAFF 0%, #F5F7FA 100%);
+  background: linear-gradient(180deg, #A0D8EF 0%, #FAFAFA 100%);
   z-index: 0;
 }
 
@@ -262,28 +262,28 @@ onShow(() => {
     .title {
       font-size: 28px;
       font-weight: 800;
-      color: #1A1D26;
+      color: #37474F;
       display: block;
       margin-bottom: 4px;
     }
     .subtitle {
       font-size: 14px;
-      color: #6B7280;
+      color: #78909C;
     }
   }
   
   .report-btn {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(8px);
     padding: 8px 16px;
     border-radius: 20px;
     display: flex;
     align-items: center;
     gap: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(130, 201, 160, 0.2);
     font-size: 13px;
     font-weight: 600;
-    color: #4B6EF6;
+    color: #82C9A0;
     
     .icon {
       font-size: 14px;
@@ -312,16 +312,21 @@ onShow(() => {
     background: white;
     border-radius: 20px;
     font-size: 14px;
-    color: #6B7280;
+    color: #78909C;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
     transition: all 0.2s;
     border: 1px solid transparent;
     
     &.active {
-      background: #1A1D26;
+      background: #82C9A0;
       color: white;
       font-weight: 500;
-      box-shadow: 0 4px 10px rgba(26, 29, 38, 0.2);
+      box-shadow: 0 4px 10px rgba(130, 201, 160, 0.3);
+      
+      .filter-avatar-placeholder {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
     }
     
     .filter-avatar-placeholder {
@@ -329,8 +334,8 @@ onShow(() => {
       height: 20px;
       border-radius: 50%;
       margin-right: 6px;
-      background: #E0E7FF;
-      color: #4B6EF6;
+      background: #A0D8EF;
+      color: #37474F;
       font-size: 10px;
       display: flex;
       align-items: center;
@@ -351,7 +356,7 @@ onShow(() => {
   .section-title {
     font-size: 18px;
     font-weight: 700;
-    color: #1A1D26;
+    color: #37474F;
   }
 }
 
@@ -368,7 +373,7 @@ onShow(() => {
   }
   .empty-text {
     font-size: 14px;
-    color: #9CA3AF;
+    color: #B0BEC5;
   }
 }
 
@@ -385,6 +390,7 @@ onShow(() => {
     transition: transform 0.2s ease;
     position: relative;
     z-index: 2;
+    border: 1px solid #ECEFF1;
     
     &.swiped {
       transform: translateX(-70px);
@@ -401,7 +407,7 @@ onShow(() => {
     right: 0;
     bottom: 0;
     width: 70px;
-    background: #EF4444;
+    background: #FF8A80;
     color: white;
     display: flex;
     align-items: center;
@@ -426,13 +432,13 @@ onShow(() => {
     
     .date-text {
       font-size: 12px;
-      color: #9CA3AF;
+      color: #78909C;
       margin-bottom: 2px;
     }
     .time-text {
       font-size: 16px;
       font-weight: 700;
-      color: #1A1D26;
+      color: #37474F;
     }
   }
   
@@ -453,20 +459,21 @@ onShow(() => {
       border-radius: 6px;
       font-weight: 600;
       
-      &.tag-me { background: #EFF6FF; color: #4B6EF6; }
-      &.tag-child { background: #FFF1F2; color: #F43F5E; }
-      &.tag-elder { background: #F0FDF4; color: #22C55E; }
+      &.tag-me { background: #E0F2F1; color: #00897B; } /* Teal-ish for Me */
+      &.tag-child { background: #FFF3E0; color: #FB8C00; } /* Orange for Child */
+      &.tag-elder { background: #F1F8E9; color: #689F38; } /* Light Green for Elder */
     }
     
     .status-tag {
       font-size: 11px;
       padding: 2px 8px;
       border-radius: 6px;
-      background: #F3F4F6;
-      color: #4B5563;
+      background: #F5F5F5;
+      color: #37474F;
       
-      &.status-warning { background: #FEF2F2; color: #EF4444; }
-      &.status-info { background: #F0F9FF; color: #0EA5E9; }
+      &.status-normal { background: #FFE082; color: #37474F; } /* Yellow */
+      &.status-abnormal { background: #FFAB91; color: #37474F; } /* Pink */
+      &.status-warning { background: #FF8A80; color: #FFFFFF; } /* Red */
     }
     
     .feeling-row {
@@ -476,7 +483,7 @@ onShow(() => {
       
       .feeling-text {
         font-size: 13px;
-        color: #1A1D26;
+        color: #37474F;
         font-weight: 500;
         
         .feeling-emoji {
@@ -486,14 +493,14 @@ onShow(() => {
       
       .duration-text {
         font-size: 13px;
-        color: #6B7280;
+        color: #78909C;
         margin-left: 4px;
       }
     }
     
     .note-text {
       font-size: 13px;
-      color: #6B7280;
+      color: #78909C;
       line-height: 1.4;
       display: -webkit-box;
       -webkit-box-orient: vertical;
