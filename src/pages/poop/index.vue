@@ -5,8 +5,8 @@
 
     <view class="header">
       <view class="title-area">
-        <text class="title">早安，</text>
-        <text class="subtitle">今天也要关注肠道健康哦</text>
+        <text class="title">{{ greeting }}</text>
+        <text class="subtitle">今天也要关注肠道健康哦！</text>
       </view>
       <view class="report-btn" @click="goToReport">
         <text class="icon">📊</text>
@@ -94,6 +94,20 @@ const currentFilter = ref('本人')
 const currentSwipedId = ref(null)
 const startX = ref(0)
 const startY = ref(0)
+const greeting = ref('早安，')
+
+const updateGreeting = () => {
+  const hour = new Date().getHours()
+  if (hour >= 5 && hour < 12) {
+    greeting.value = '早安，'
+  } else if (hour >= 12 && hour < 14) {
+    greeting.value = '午安，'
+  } else if (hour >= 14 && hour < 19) {
+    greeting.value = '下午好，'
+  } else {
+    greeting.value = '晚上好，'
+  }
+}
 
 const filteredRecords = computed(() => {
   if (!currentFilter.value) return records.value
@@ -214,6 +228,7 @@ onMounted(() => {
 onShow(() => {
   uni.hideTabBar()
   loadRecords()
+  updateGreeting()
 })
 </script>
 
