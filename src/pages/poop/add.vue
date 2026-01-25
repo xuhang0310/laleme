@@ -240,7 +240,7 @@ const saveRecord = () => {
 <style lang="scss" scoped>
 .container {
   min-height: 100vh;
-  background-color: #FAFAFA;
+  background-color: $uni-bg-color;
   padding: 20px 16px 100px;
 }
 
@@ -254,7 +254,7 @@ const saveRecord = () => {
   .section-title {
     font-size: 16px;
     font-weight: 700;
-    color: #37474F;
+    color: $uni-text-color;
     margin-bottom: 16px;
   }
 }
@@ -268,7 +268,7 @@ const saveRecord = () => {
   
   .label {
     font-size: 13px;
-    color: #78909C;
+    color: $uni-text-color-grey;
     margin-bottom: 10px;
     display: block;
     font-weight: 500;
@@ -284,13 +284,13 @@ const saveRecord = () => {
     min-width: 80px; /* Ensure minimum width */
     padding: 0 12px;
     height: 44px;
-    background: #FAFAFA;
+    background: $uni-bg-color;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    border: 1px solid #ECEFF1;
+    border: 1px solid $uni-border-color;
     transition: all 0.2s;
     flex-shrink: 0; /* Prevent shrinking */
     
@@ -299,8 +299,8 @@ const saveRecord = () => {
       height: 24px;
       border-radius: 50%;
       margin-right: 6px;
-      background: #A0D8EF;
-      color: #37474F;
+      background: $uni-color-primary-light;
+      color: $uni-text-color;
       font-size: 12px;
       display: flex;
       align-items: center;
@@ -310,19 +310,19 @@ const saveRecord = () => {
     
     .relation-text {
       font-size: 14px;
-      color: #78909C;
+      color: $uni-text-color-grey;
       font-weight: 500;
     }
     
     &.active {
-      background: #82C9A0;
-      border-color: #82C9A0;
+      background: $uni-color-primary;
+      border-color: $uni-color-primary;
       .relation-text {
         color: white;
       }
       .member-avatar-placeholder {
         background: white;
-        color: #82C9A0;
+        color: $uni-color-primary;
       }
     }
     
@@ -340,7 +340,7 @@ const saveRecord = () => {
       }
       
       &:active {
-        background: #F5F5F5;
+        background: $uni-bg-color-grey;
       }
     }
     
@@ -352,7 +352,7 @@ const saveRecord = () => {
       height: 16px;
       background: white;
       border-radius: 50%;
-      color: #82C9A0;
+      color: $uni-color-primary;
       font-size: 10px;
       display: flex;
       align-items: center;
@@ -366,15 +366,15 @@ const saveRecord = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #FAFAFA;
+  background: $uni-bg-color;
   padding: 12px 16px;
   border-radius: 10px;
-  border: 1px solid #ECEFF1;
+  border: 1px solid $uni-border-color;
   
   .time-val {
     font-size: 16px;
     font-weight: 600;
-    color: #37474F;
+    color: $uni-text-color;
   }
   .arrow {
     color: #B0BEC5;
@@ -395,31 +395,31 @@ const saveRecord = () => {
 .chip {
   display: inline-block;
   padding: 8px 16px;
-  background: #FAFAFA;
-  border: 1px solid #ECEFF1;
+  background: $uni-bg-color;
+  border: 1px solid $uni-border-color;
   border-radius: 20px;
   font-size: 13px;
-  color: #78909C;
+  color: $uni-text-color-grey;
   transition: all 0.2s;
   
   &.active {
-    background: #82C9A0;
+    background: $uni-color-primary;
     color: white;
-    border-color: #82C9A0;
+    border-color: $uni-color-primary;
     font-weight: 500;
   }
 }
 
 .input-wrapper {
-  background: #FAFAFA;
+  background: $uni-bg-color;
   padding: 12px 16px;
   border-radius: 10px;
-  border: 1px solid #ECEFF1;
+  border: 1px solid $uni-border-color;
   
   .input {
     font-size: 14px;
     width: 100%;
-    color: #37474F;
+    color: $uni-text-color;
   }
 }
 
@@ -434,7 +434,7 @@ const saveRecord = () => {
   z-index: 10;
   
   .save-btn {
-    background: #82C9A0;
+    background: $uni-color-primary;
     color: white;
     border-radius: 24px;
     font-weight: 600;
@@ -457,18 +457,18 @@ const saveRecord = () => {
 }
 
 .feeling-item {
-  background: #FAFAFA;
+  background: $uni-bg-color;
   border-radius: 12px;
   padding: 12px;
   display: flex;
   align-items: center;
-  border: 1px solid #ECEFF1;
+  border: 1px solid $uni-border-color;
   transition: all 0.2s;
   position: relative;
   
   &.active {
     background: #E8F5E9;
-    border-color: #82C9A0;
+    border-color: $uni-color-primary;
     
     .feeling-emoji {
       transform: scale(1.1);
@@ -489,15 +489,16 @@ const saveRecord = () => {
     .feeling-title {
       font-size: 14px;
       font-weight: 600;
-      color: #1A1D26;
+      color: $uni-text-color;
       margin-bottom: 2px;
     }
     
     .feeling-desc {
       font-size: 12px;
-      color: #6B7280;
+      color: $uni-text-color-grey;
     }
   }
+  
   
   .check-mark {
     position: absolute;

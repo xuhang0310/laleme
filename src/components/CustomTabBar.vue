@@ -66,7 +66,7 @@ const switchTab = (path) => {
   left: 0;
   width: 100%;
   height: 1px;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: $uni-border-color;
   transform: scaleY(0.5);
 }
 
@@ -95,10 +95,10 @@ const switchTab = (path) => {
 
 .text {
   font-size: 10px;
-  color: #999;
+  color: $uni-text-color-grey;
   
   &.active {
-    color: #82C9A0;
+    color: $uni-color-primary;
     font-weight: 600;
   }
 }
@@ -112,7 +112,7 @@ const switchTab = (path) => {
 .center-item {
   width: 64px;
   height: 64px;
-  background: #82C9A0; /* Soft Mint Green */
+  background: $uni-color-primary;
   border-radius: 50%;
   position: absolute;
   top: -24px; /* Move up to bulge out */

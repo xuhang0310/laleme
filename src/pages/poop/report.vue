@@ -364,14 +364,14 @@ onMounted(() => {
 <style lang="scss" scoped>
 .container {
   min-height: 100vh;
-  background-color: #FAFAFA;
+  background-color: $uni-bg-color;
   position: relative;
   padding-bottom: 50px;
 }
 
 .bg-header {
   height: 220px;
-  background: linear-gradient(180deg, #A0D8EF 0%, #FAFAFA 100%);
+  background: linear-gradient(180deg, $uni-color-primary-light 0%, $uni-bg-color 100%);
   border-bottom-left-radius: 24px;
   border-bottom-right-radius: 24px;
   position: absolute;
@@ -407,12 +407,12 @@ onMounted(() => {
     .tab-item {
       padding: 6px 20px;
       font-size: 14px;
-      color: #78909C;
+      color: $uni-text-color-grey;
       border-radius: 16px;
       transition: all 0.2s;
       
       &.active {
-        background: #82C9A0;
+        background: $uni-color-primary;
         color: white;
         font-weight: 600;
       }
@@ -436,12 +436,12 @@ onMounted(() => {
         background: rgba(255, 255, 255, 0.5);
         border-radius: 20px;
         font-size: 14px;
-        color: #37474F;
+        color: $uni-text-color;
         border: 1px solid transparent;
         transition: all 0.2s;
         
         &.active {
-          background: #82C9A0;
+          background: $uni-color-primary;
           color: white;
           font-weight: 500;
           box-shadow: 0 4px 10px rgba(130, 201, 160, 0.3);
@@ -457,8 +457,8 @@ onMounted(() => {
           height: 20px;
           border-radius: 50%;
           margin-right: 6px;
-          background: #A0D8EF;
-          color: #37474F;
+          background: $uni-color-primary-light;
+          color: $uni-text-color;
           font-size: 10px;
           display: flex;
           align-items: center;
@@ -495,9 +495,9 @@ onMounted(() => {
     justify-content: center;
     position: relative;
     
-    &.score-high { border-color: #82C9A0; color: #82C9A0; }
-    &.score-mid { border-color: #FFE082; color: #FBC02D; } /* Darker yellow for text */
-    &.score-low { border-color: #FFAB91; color: #FF7043; } /* Darker orange for text */
+    &.score-high { border-color: $uni-color-primary; color: $uni-color-primary; }
+    &.score-mid { border-color: $uni-color-normal; color: #FBC02D; }
+    &.score-low { border-color: $uni-color-warning; color: #FF7043; }
     
     .score-val {
       font-size: 32px;
@@ -506,7 +506,7 @@ onMounted(() => {
     }
     .score-label {
       font-size: 12px;
-      color: #90A4AE;
+      color: $uni-text-color-grey;
       margin-top: 4px;
     }
   }
@@ -520,12 +520,12 @@ onMounted(() => {
     .summary-title {
       font-size: 20px;
       font-weight: 700;
-      color: #37474F;
+      color: $uni-text-color;
       margin-bottom: 6px;
     }
     .summary-desc {
       font-size: 14px;
-      color: #78909C;
+      color: $uni-text-color-grey;
     }
   }
 }
@@ -598,7 +598,7 @@ onMounted(() => {
       flex: 1;
       .advice-text {
         font-size: 14px;
-        color: #4B5563;
+        color: $uni-text-color;
         line-height: 1.5;
         display: block;
         margin-bottom: 6px;
@@ -622,7 +622,7 @@ onMounted(() => {
     .section-title {
       font-size: 16px;
       font-weight: 700;
-      color: #1A1D26;
+      color: $uni-text-color;
     }
   }
 }

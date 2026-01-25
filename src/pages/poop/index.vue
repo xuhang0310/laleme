@@ -235,7 +235,7 @@ onShow(() => {
 <style lang="scss" scoped>
 .container {
   min-height: 100vh;
-  background-color: #FAFAFA;
+  background-color: $uni-bg-color;
   position: relative;
   padding-bottom: 100px;
 }
@@ -246,7 +246,7 @@ onShow(() => {
   left: 0;
   width: 100%;
   height: 220px;
-  background: linear-gradient(180deg, #A0D8EF 0%, #FAFAFA 100%);
+  background: linear-gradient(180deg, $uni-color-primary-light 0%, $uni-bg-color 100%);
   z-index: 0;
 }
 
@@ -262,13 +262,13 @@ onShow(() => {
     .title {
       font-size: 28px;
       font-weight: 800;
-      color: #37474F;
+      color: $uni-text-color;
       display: block;
       margin-bottom: 4px;
     }
     .subtitle {
       font-size: 14px;
-      color: #78909C;
+      color: $uni-text-color-grey;
     }
   }
   
@@ -283,7 +283,7 @@ onShow(() => {
     box-shadow: 0 4px 12px rgba(130, 201, 160, 0.2);
     font-size: 13px;
     font-weight: 600;
-    color: #82C9A0;
+    color: $uni-color-primary;
     
     .icon {
       font-size: 14px;
@@ -312,13 +312,13 @@ onShow(() => {
     background: white;
     border-radius: 20px;
     font-size: 14px;
-    color: #78909C;
+    color: $uni-text-color-grey;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
     transition: all 0.2s;
     border: 1px solid transparent;
     
     &.active {
-      background: #82C9A0;
+      background: $uni-color-primary;
       color: white;
       font-weight: 500;
       box-shadow: 0 4px 10px rgba(130, 201, 160, 0.3);
@@ -334,8 +334,8 @@ onShow(() => {
       height: 20px;
       border-radius: 50%;
       margin-right: 6px;
-      background: #A0D8EF;
-      color: #37474F;
+      background: $uni-color-primary-light;
+      color: $uni-text-color;
       font-size: 10px;
       display: flex;
       align-items: center;
@@ -356,7 +356,7 @@ onShow(() => {
   .section-title {
     font-size: 18px;
     font-weight: 700;
-    color: #37474F;
+    color: $uni-text-color;
   }
 }
 
@@ -373,7 +373,7 @@ onShow(() => {
   }
   .empty-text {
     font-size: 14px;
-    color: #B0BEC5;
+    color: $uni-text-color-placeholder;
   }
 }
 
@@ -390,14 +390,14 @@ onShow(() => {
     transition: transform 0.2s ease;
     position: relative;
     z-index: 2;
-    border: 1px solid #ECEFF1;
+    border: 1px solid $uni-border-color;
     
     &.swiped {
       transform: translateX(-70px);
     }
     
     &:active {
-      background-color: #FAFAFA;
+      background-color: $uni-bg-color;
     }
   }
 
@@ -407,7 +407,7 @@ onShow(() => {
     right: 0;
     bottom: 0;
     width: 70px;
-    background: #FF8A80;
+    background: $uni-color-error;
     color: white;
     display: flex;
     align-items: center;
@@ -432,13 +432,13 @@ onShow(() => {
     
     .date-text {
       font-size: 12px;
-      color: #78909C;
+      color: $uni-text-color-grey;
       margin-bottom: 2px;
     }
     .time-text {
       font-size: 16px;
       font-weight: 700;
-      color: #37474F;
+      color: $uni-text-color;
     }
   }
   
@@ -468,12 +468,12 @@ onShow(() => {
       font-size: 11px;
       padding: 2px 8px;
       border-radius: 6px;
-      background: #F5F5F5;
-      color: #37474F;
+      background: $uni-bg-color-grey;
+      color: $uni-text-color;
       
-      &.status-normal { background: #FFE082; color: #37474F; } /* Yellow */
-      &.status-abnormal { background: #FFAB91; color: #37474F; } /* Pink */
-      &.status-warning { background: #FF8A80; color: #FFFFFF; } /* Red */
+      &.status-normal { background: $uni-color-normal; color: $uni-text-color; }
+      &.status-abnormal { background: $uni-color-warning; color: $uni-text-color; }
+      &.status-warning { background: $uni-color-error; color: #FFFFFF; }
     }
     
     .feeling-row {
@@ -483,7 +483,7 @@ onShow(() => {
       
       .feeling-text {
         font-size: 13px;
-        color: #37474F;
+        color: $uni-text-color;
         font-weight: 500;
         
         .feeling-emoji {
@@ -493,14 +493,14 @@ onShow(() => {
       
       .duration-text {
         font-size: 13px;
-        color: #78909C;
+        color: $uni-text-color-grey;
         margin-left: 4px;
       }
     }
     
     .note-text {
       font-size: 13px;
-      color: #78909C;
+      color: $uni-text-color-grey;
       line-height: 1.4;
       display: -webkit-box;
       -webkit-box-orient: vertical;
