@@ -66,7 +66,7 @@ const switchTab = (path) => {
   left: 0;
   width: 100%;
   height: 1px;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: $uni-border-color;
   transform: scaleY(0.5);
 }
 
@@ -95,10 +95,10 @@ const switchTab = (path) => {
 
 .text {
   font-size: 10px;
-  color: #999;
+  color: $uni-text-color-grey;
   
   &.active {
-    color: #1A1D26;
+    color: $uni-color-primary;
     font-weight: 600;
   }
 }
@@ -112,7 +112,7 @@ const switchTab = (path) => {
 .center-item {
   width: 64px;
   height: 64px;
-  background: #F9E031; /* Bright Yellow */
+  background: $uni-color-primary;
   border-radius: 50%;
   position: absolute;
   top: -24px; /* Move up to bulge out */
@@ -121,7 +121,7 @@ const switchTab = (path) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 -4px 10px rgba(249, 224, 49, 0.3);
+  box-shadow: 0 4px 10px rgba(130, 201, 160, 0.4);
   
   &:active {
     transform: translateX(-50%) scale(0.95);
@@ -131,6 +131,6 @@ const switchTab = (path) => {
 .center-text {
   font-size: 16px;
   font-weight: 800;
-  color: #1A1D26;
+  color: #FFFFFF;
 }
 </style>

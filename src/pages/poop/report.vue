@@ -364,14 +364,14 @@ onMounted(() => {
 <style lang="scss" scoped>
 .container {
   min-height: 100vh;
-  background-color: #F5F7FA;
+  background-color: $uni-bg-color;
   position: relative;
   padding-bottom: 50px;
 }
 
 .bg-header {
   height: 220px;
-  background: linear-gradient(135deg, #1A1D26 0%, #374151 100%);
+  background: linear-gradient(180deg, $uni-color-primary-light 0%, $uni-bg-color 100%);
   border-bottom-left-radius: 24px;
   border-bottom-right-radius: 24px;
   position: absolute;
@@ -396,7 +396,7 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     margin-bottom: 16px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.5);
     border-radius: 20px;
     padding: 4px;
     width: fit-content;
@@ -407,13 +407,13 @@ onMounted(() => {
     .tab-item {
       padding: 6px 20px;
       font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
+      color: $uni-text-color-grey;
       border-radius: 16px;
       transition: all 0.2s;
       
       &.active {
-        background: white;
-        color: #1A1D26;
+        background: $uni-color-primary;
+        color: white;
         font-weight: 600;
       }
     }
@@ -433,17 +433,23 @@ onMounted(() => {
         display: flex;
         align-items: center;
         padding: 6px 16px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.5);
         border-radius: 20px;
         font-size: 14px;
-        color: white;
+        color: $uni-text-color;
         border: 1px solid transparent;
         transition: all 0.2s;
         
         &.active {
-          background: white;
-          color: #1A1D26;
+          background: $uni-color-primary;
+          color: white;
           font-weight: 500;
+          box-shadow: 0 4px 10px rgba(130, 201, 160, 0.3);
+          
+          .member-avatar-placeholder {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+          }
         }
         
         .member-avatar-placeholder {
@@ -451,8 +457,8 @@ onMounted(() => {
           height: 20px;
           border-radius: 50%;
           margin-right: 6px;
-          background: #E0E7FF;
-          color: #4B6EF6;
+          background: $uni-color-primary-light;
+          color: $uni-text-color;
           font-size: 10px;
           display: flex;
           align-items: center;
@@ -470,7 +476,7 @@ onMounted(() => {
   border-radius: 20px;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(130, 201, 160, 0.2);
   
   .card-inner {
     display: flex;
@@ -482,16 +488,16 @@ onMounted(() => {
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    border: 8px solid #F3F4F6;
+    border: 8px solid #F5F5F5;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
     
-    &.score-high { border-color: #10B981; color: #10B981; }
-    &.score-mid { border-color: #F59E0B; color: #F59E0B; }
-    &.score-low { border-color: #EF4444; color: #EF4444; }
+    &.score-high { border-color: $uni-color-primary; color: $uni-color-primary; }
+    &.score-mid { border-color: $uni-color-normal; color: #FBC02D; }
+    &.score-low { border-color: $uni-color-warning; color: #FF7043; }
     
     .score-val {
       font-size: 32px;
@@ -500,7 +506,7 @@ onMounted(() => {
     }
     .score-label {
       font-size: 12px;
-      color: #9CA3AF;
+      color: $uni-text-color-grey;
       margin-top: 4px;
     }
   }
@@ -514,12 +520,12 @@ onMounted(() => {
     .summary-title {
       font-size: 20px;
       font-weight: 700;
-      color: #1A1D26;
+      color: $uni-text-color;
       margin-bottom: 6px;
     }
     .summary-desc {
       font-size: 14px;
-      color: #6B7280;
+      color: $uni-text-color-grey;
     }
   }
 }
@@ -532,7 +538,7 @@ onMounted(() => {
   gap: 12px;
   
   .alert-card {
-    background: #FEF2F2;
+    background: #FFEBEE;
     border-radius: 12px;
     padding: 16px;
     display: flex;
@@ -592,7 +598,7 @@ onMounted(() => {
       flex: 1;
       .advice-text {
         font-size: 14px;
-        color: #4B5563;
+        color: $uni-text-color;
         line-height: 1.5;
         display: block;
         margin-bottom: 6px;
@@ -616,7 +622,7 @@ onMounted(() => {
     .section-title {
       font-size: 16px;
       font-weight: 700;
-      color: #1A1D26;
+      color: $uni-text-color;
     }
   }
 }

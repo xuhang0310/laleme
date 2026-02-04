@@ -19,12 +19,14 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-height: 100vh;
+  background-color: $uni-bg-color;
 }
 
 .logo {
@@ -43,6 +45,6 @@ export default {
 
 .title {
   font-size: 36rpx;
-  color: #8f8f94;
+  color: $uni-text-color;
 }
 </style>

@@ -240,7 +240,7 @@ const saveRecord = () => {
 <style lang="scss" scoped>
 .container {
   min-height: 100vh;
-  background-color: #F5F7FA;
+  background-color: $uni-bg-color;
   padding: 20px 16px 100px;
 }
 
@@ -249,12 +249,12 @@ const saveRecord = () => {
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 2px 8px rgba(130, 201, 160, 0.1);
   
   .section-title {
     font-size: 16px;
     font-weight: 700;
-    color: #1A1D26;
+    color: $uni-text-color;
     margin-bottom: 16px;
   }
 }
@@ -268,7 +268,7 @@ const saveRecord = () => {
   
   .label {
     font-size: 13px;
-    color: #6B7280;
+    color: $uni-text-color-grey;
     margin-bottom: 10px;
     display: block;
     font-weight: 500;
@@ -284,13 +284,13 @@ const saveRecord = () => {
     min-width: 80px; /* Ensure minimum width */
     padding: 0 12px;
     height: 44px;
-    background: #F3F4F6;
+    background: $uni-bg-color;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    border: 1px solid transparent;
+    border: 1px solid $uni-border-color;
     transition: all 0.2s;
     flex-shrink: 0; /* Prevent shrinking */
     
@@ -299,8 +299,8 @@ const saveRecord = () => {
       height: 24px;
       border-radius: 50%;
       margin-right: 6px;
-      background: #E0E7FF;
-      color: #4B6EF6;
+      background: $uni-color-primary-light;
+      color: $uni-text-color;
       font-size: 12px;
       display: flex;
       align-items: center;
@@ -310,15 +310,19 @@ const saveRecord = () => {
     
     .relation-text {
       font-size: 14px;
-      color: #4B5563;
+      color: $uni-text-color-grey;
       font-weight: 500;
     }
     
     &.active {
-      background: #EFF6FF;
-      border-color: #4B6EF6;
+      background: $uni-color-primary;
+      border-color: $uni-color-primary;
       .relation-text {
-        color: #4B6EF6;
+        color: white;
+      }
+      .member-avatar-placeholder {
+        background: white;
+        color: $uni-color-primary;
       }
     }
     
@@ -327,16 +331,16 @@ const saveRecord = () => {
       width: 44px;
       padding: 0;
       background: white;
-      border: 1px dashed #D1D5DB;
+      border: 1px dashed #B0BEC5;
       
       .relation-text {
         font-size: 20px;
-        color: #9CA3AF;
+        color: #B0BEC5;
         font-weight: 300;
       }
       
       &:active {
-        background: #F9FAFB;
+        background: $uni-bg-color-grey;
       }
     }
     
@@ -346,13 +350,14 @@ const saveRecord = () => {
       right: -6px;
       width: 16px;
       height: 16px;
-      background: #4B6EF6;
+      background: white;
       border-radius: 50%;
-      color: white;
+      color: $uni-color-primary;
       font-size: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
   }
 }
@@ -361,17 +366,18 @@ const saveRecord = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #F9FAFB;
+  background: $uni-bg-color;
   padding: 12px 16px;
   border-radius: 10px;
+  border: 1px solid $uni-border-color;
   
   .time-val {
     font-size: 16px;
     font-weight: 600;
-    color: #1A1D26;
+    color: $uni-text-color;
   }
   .arrow {
-    color: #9CA3AF;
+    color: #B0BEC5;
   }
 }
 
@@ -389,58 +395,31 @@ const saveRecord = () => {
 .chip {
   display: inline-block;
   padding: 8px 16px;
-  background: #F3F4F6;
+  background: $uni-bg-color;
+  border: 1px solid $uni-border-color;
   border-radius: 20px;
   font-size: 13px;
-  color: #4B5563;
+  color: $uni-text-color-grey;
   transition: all 0.2s;
   
   &.active {
-    background: #1A1D26;
+    background: $uni-color-primary;
     color: white;
+    border-color: $uni-color-primary;
     font-weight: 500;
   }
 }
 
-.upload-area {
-  width: 100%;
-  height: 120px;
-  background: #F9FAFB;
-  border: 1px dashed #D1D5DB;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  
-  .preview-img {
-    width: 100%;
-    height: 100%;
-  }
-  
-  .upload-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .icon-camera {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-    .tip {
-      font-size: 12px;
-      color: #9CA3AF;
-    }
-  }
-}
-
 .input-wrapper {
-  background: #F9FAFB;
+  background: $uni-bg-color;
   padding: 12px 16px;
   border-radius: 10px;
+  border: 1px solid $uni-border-color;
   
   .input {
     font-size: 14px;
     width: 100%;
+    color: $uni-text-color;
   }
 }
 
@@ -451,11 +430,11 @@ const saveRecord = () => {
   right: 0;
   background: white;
   padding: 16px 20px;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 -4px 12px rgba(130, 201, 160, 0.1);
   z-index: 10;
   
   .save-btn {
-    background: linear-gradient(135deg, #4B6EF6 0%, #2563EB 100%);
+    background: $uni-color-primary;
     color: white;
     border-radius: 24px;
     font-weight: 600;
@@ -463,6 +442,7 @@ const saveRecord = () => {
     height: 48px;
     line-height: 48px;
     border: none;
+    box-shadow: 0 4px 12px rgba(130, 201, 160, 0.4);
     
     &:active {
       opacity: 0.9;
@@ -477,18 +457,18 @@ const saveRecord = () => {
 }
 
 .feeling-item {
-  background: #F9FAFB;
+  background: $uni-bg-color;
   border-radius: 12px;
   padding: 12px;
   display: flex;
   align-items: center;
-  border: 1px solid transparent;
+  border: 1px solid $uni-border-color;
   transition: all 0.2s;
   position: relative;
   
   &.active {
-    background: #EFF6FF;
-    border-color: #4B6EF6;
+    background: #E8F5E9;
+    border-color: $uni-color-primary;
     
     .feeling-emoji {
       transform: scale(1.1);
@@ -509,15 +489,16 @@ const saveRecord = () => {
     .feeling-title {
       font-size: 14px;
       font-weight: 600;
-      color: #1A1D26;
+      color: $uni-text-color;
       margin-bottom: 2px;
     }
     
     .feeling-desc {
       font-size: 12px;
-      color: #6B7280;
+      color: $uni-text-color-grey;
     }
   }
+  
   
   .check-mark {
     position: absolute;
