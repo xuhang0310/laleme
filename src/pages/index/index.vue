@@ -16,15 +16,8 @@
     </view>
 
     <!-- Pet Section -->
-    <view class="pet-section">
-      <view class="pet-circle-bg"></view>
-      <image class="pet-avatar" src="/static/puppy.png" mode="aspectFit"></image>
-      <view class="status-pill">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 4px;">
-          <path d="M12.62 20.81C12.28 20.93 11.72 20.93 11.38 20.81C8.48 19.82 2 15.69 2 8.68998C2 5.59998 4.49 3.09998 7.56 3.09998C9.38 3.09998 10.99 3.97998 12 5.33998C13.01 3.97998 14.63 3.09998 16.44 3.09998C19.51 3.09998 22 5.59998 22 8.68998C22 15.69 15.52 19.82 12.62 20.81Z" fill="#00E676"/>
-        </svg>
-        <text class="status-text">开心</text>
-      </view>
+    <view class="pet-wrapper">
+      <PetInteraction />
     </view>
 
     <!-- Action Buttons -->
@@ -117,6 +110,7 @@
 <script setup>
 import { ref } from 'vue'
 import FloatingTabBar from '@/components/FloatingTabBar.vue'
+import PetInteraction from '@/components/PetInteraction.vue'
 
 const title = ref('Home')
 
@@ -185,49 +179,8 @@ page {
   box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05);
 }
 
-.pet-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  height: 400rpx;
+.pet-wrapper {
   margin-bottom: 40rpx;
-}
-
-.pet-circle-bg {
-  position: absolute;
-  width: 400rpx;
-  height: 400rpx;
-  border-radius: 50%;
-  border: 8rpx solid #E8F5E9; /* Light green ring */
-  box-sizing: border-box;
-}
-
-.pet-avatar {
-  width: 360rpx;
-  height: 360rpx;
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.status-pill {
-  position: absolute;
-  bottom: 20rpx;
-  right: 120rpx;
-  background-color: #fff;
-  padding: 12rpx 32rpx;
-  border-radius: 40rpx;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
-  border: 2rpx solid #00E676;
-  z-index: 2;
-}
-
-.status-text {
-  font-size: 28rpx;
-  color: #333;
-  font-weight: 600;
 }
 
 .action-buttons {
