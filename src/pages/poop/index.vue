@@ -226,7 +226,6 @@ onMounted(() => {
 })
 
 onShow(() => {
-  uni.hideTabBar()
   loadRecords()
   updateGreeting()
 })
