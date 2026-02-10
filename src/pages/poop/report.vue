@@ -3,18 +3,11 @@
     <!-- Custom Header -->
     <view class="custom-header">
       <view class="back-btn" @click="goBack">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 18L9 12L15 6" stroke="#1A1D26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <uni-icons type="back" size="24" color="#1A1D26"></uni-icons>
       </view>
       <text class="header-title">健康报告</text>
       <view class="header-right">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="#1A1D26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M16 2V6" stroke="#1A1D26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M8 2V6" stroke="#1A1D26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M3 10H21" stroke="#1A1D26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <uni-icons type="calendar" size="24" color="#1A1D26"></uni-icons>
       </view>
     </view>
 
@@ -24,11 +17,11 @@
         <text class="card-label">如厕频率</text>
         <view class="freq-header">
           <view class="freq-count">
-            <text class="count-num">24</text>
+            <text class="count-num">{{ totalCount }}</text>
             <text class="count-unit">次</text>
           </view>
           <view class="trend-badge">
-            <text>本周 +12%</text>
+            <text>本周</text>
           </view>
         </view>
         
@@ -47,20 +40,10 @@
         <!-- Feeling Card -->
         <view class="card feeling-card">
           <view class="donut-chart">
-            <svg viewBox="0 0 36 36" class="circular-chart">
-              <path class="circle-bg"
-                d="M18 2.0845
-                  a 15.9155 15.9155 0 0 1 0 31.831
-                  a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-              <path class="circle"
-                stroke-dasharray="75, 100"
-                d="M18 2.0845
-                  a 15.9155 15.9155 0 0 1 0 31.831
-                  a 15.9155 15.9155 0 0 1 0 -31.831"
-              />
-            </svg>
-            <text class="donut-text">75%</text>
+            <view class="progress-ring" :style="{ '--percent': goodFeelingPercent }">
+              <view class="progress-mask"></view>
+            </view>
+            <text class="donut-text">{{ goodFeelingPercent }}%</text>
           </view>
           <text class="feeling-title">感觉良好</text>
           <text class="feeling-subtitle">保持下去!</text>
@@ -70,17 +53,9 @@
         <view class="card insight-card">
           <text class="card-label">洞察</text>
           <view class="insight-list">
-            <view class="insight-item">
-              <view class="dot green"></view>
-              <text class="insight-text">高纤维 (12)</text>
-            </view>
-            <view class="insight-item">
-              <view class="dot teal"></view>
-              <text class="insight-text">水分充足 (8)</text>
-            </view>
-            <view class="insight-item">
-              <view class="dot gray"></view>
-              <text class="insight-text">胀气 (4)</text>
+            <view class="insight-item" v-for="(item, index) in insights" :key="index">
+              <view :class="['dot', item.type]"></view>
+              <text class="insight-text">{{ item.text }} ({{ item.count }})</text>
             </view>
           </view>
           <view class="insight-footer">
@@ -92,34 +67,30 @@
       <!-- Milestone Card -->
       <view class="card milestone-card">
         <view class="milestone-content">
-          <image class="puppy-avatar" src="/static/puppy.png" mode="aspectFill"></image>
+          <image class="puppy-avatar" src="../../static/puppy_katong.png" mode="aspectFill"></image>
           <view class="milestone-info">
-            <text class="card-label">成长里程碑</text>
-            <text class="milestone-desc">你的小狗进化进度已达 80%!</text>
-            
+            <text class="milestone-desc">主人，您的健康就是我的快乐！保持良好的习惯哦！</text>
             <view class="progress-container">
               <view class="progress-bar">
                 <view class="progress-fill" style="width: 80%"></view>
               </view>
               <view class="progress-labels">
-                <text>8 级</text>
-                <text>9 级</text>
+                <text>0 级</text>
+                <text>1 级</text>
               </view>
             </view>
           </view>
         </view>
         
-        <view class="milestone-footer">
+        <!-- <view class="milestone-footer">
           <view class="footer-left">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#00E676"/>
-            </svg>
+            <uni-icons type="paperplane-filled" size="20" color="#00E676"></uni-icons>
             <text class="next-level">下一级: 黄金精灵</text>
           </view>
           <view class="detail-btn">
             <text>详情</text>
           </view>
-        </view>
+        </view> -->
       </view>
 
       <!-- Bottom Spacer -->
@@ -131,18 +102,121 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import FloatingTabBar from '@/components/FloatingTabBar.vue'
 
-const weekData = ref([
-  { day: '周一', percent: 60 },
-  { day: '周二', percent: 40 },
-  { day: '周三', percent: 100 },
-  { day: '周四', percent: 20 },
-  { day: '周五', percent: 55 },
-  { day: '周六', percent: 50 },
-  { day: '周日', percent: 85 }
-])
+const weekData = ref([])
+const totalCount = ref(0)
+const goodFeelingPercent = ref(0)
+const insights = ref([])
+
+// Map English/Index keys to Chinese for display if needed, 
+// but data seems to be stored as Chinese strings already based on user input.
+
+onShow(() => {
+  loadData()
+})
+
+const loadData = () => {
+  const records = uni.getStorageSync('poop_records') || []
+  processWeekData(records)
+  processFeelingStats(records)
+  processInsights(records)
+}
+
+const processWeekData = (records) => {
+  const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+  const counts = [0, 0, 0, 0, 0, 0, 0]
+  
+  const now = new Date()
+  const oneDayTime = 24 * 60 * 60 * 1000
+  // Get Monday of current week
+  const dayOfWeek = now.getDay() || 7 // 1-7
+  const mondayTime = now.getTime() - (dayOfWeek - 1) * oneDayTime
+  const mondayDate = new Date(mondayTime)
+  mondayDate.setHours(0, 0, 0, 0)
+  
+  // Filter records for this week
+  const weekRecords = records.filter(r => {
+    return r.timestamp >= mondayDate.getTime()
+  })
+  
+  totalCount.value = weekRecords.length
+  
+  weekRecords.forEach(r => {
+    const date = new Date(r.timestamp)
+    let day = date.getDay()
+    if (day === 0) day = 7
+    counts[day - 1]++
+  })
+  
+  const max = Math.max(...counts, 1) // Avoid divide by zero
+  
+  weekData.value = days.map((day, index) => ({
+    day,
+    percent: (counts[index] / max) * 100,
+    count: counts[index] // Optional: store actual count if needed
+  }))
+}
+
+const processFeelingStats = (records) => {
+  if (records.length === 0) {
+    goodFeelingPercent.value = 0
+    return
+  }
+  
+  // Assuming '顺畅', '正常', '迅速' are good feelings
+  const goodFeelings = ['顺畅', '正常', '迅速', 'Smooth', 'Normal', 'Fast'] 
+  const goodCount = records.filter(r => goodFeelings.includes(r.feeling)).length
+  // Ensure we don't divide by zero if records.length is somehow 0 (though checked above)
+  const total = records.length || 1
+  goodFeelingPercent.value = Math.round((goodCount / total) * 100)
+}
+
+const processInsights = (records) => {
+  if (records.length === 0) {
+    insights.value = [{ text: '暂无数据', type: 'gray', count: 0 }]
+    return
+  }
+  
+  const shapeCounts = {}
+  const feelingCounts = {}
+  
+  records.forEach(r => {
+    if (r.shape) shapeCounts[r.shape] = (shapeCounts[r.shape] || 0) + 1
+    if (r.feeling) feelingCounts[r.feeling] = (feelingCounts[r.feeling] || 0) + 1
+  })
+  
+  const result = []
+  
+  // Find top shape
+  const topShape = Object.entries(shapeCounts).sort((a, b) => b[1] - a[1])[0]
+  if (topShape) {
+    result.push({ 
+      text: topShape[0], 
+      count: topShape[1], 
+      type: 'green' 
+    })
+  }
+  
+  // Find top feeling (excluding good ones if we want to highlight issues, or just top one)
+  const topFeeling = Object.entries(feelingCounts).sort((a, b) => b[1] - a[1])[0]
+  if (topFeeling) {
+    result.push({ 
+      text: topFeeling[0], 
+      count: topFeeling[1], 
+      type: 'teal' 
+    })
+  }
+  
+  // Add a generic one if not enough
+  if (result.length < 3) {
+    result.push({ text: '记录中', count: records.length, type: 'gray' })
+  }
+  
+  insights.value = result.slice(0, 3)
+}
 
 const goBack = () => {
   uni.navigateBack()
@@ -317,52 +391,55 @@ page {
   justify-content: center;
 }
 
+/* Circular Chart Styles - Using CSS Conic Gradient for Mini Program compatibility */
 .donut-chart {
-  position: relative;
   width: 160rpx;
   height: 160rpx;
-  margin-bottom: 20rpx;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 24rpx;
 }
 
-.circular-chart {
+.progress-ring {
   width: 100%;
   height: 100%;
-  transform: rotate(-90deg); /* Start from top */
+  border-radius: 50%;
+  background: conic-gradient(#00E676 calc(var(--percent) * 1%), #F5F7FA 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
-.circle-bg {
-  fill: none;
-  stroke: #F3F4F6;
-  stroke-width: 3.5;
-}
-
-.circle {
-  fill: none;
-  stroke: #00E676;
-  stroke-width: 3.5;
-  stroke-linecap: round;
+.progress-mask {
+  position: absolute;
+  width: 82%;
+  height: 82%;
+  background-color: #fff;
+  border-radius: 50%;
 }
 
 .donut-text {
   position: absolute;
-  font-size: 32rpx;
-  font-weight: 700;
+  font-size: 36rpx;
+  font-weight: 800;
   color: #1A1D26;
+  z-index: 1;
 }
 
 .feeling-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #1A1D26;
-  margin-bottom: 4rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #065F46; /* Emerald-800 */
+  margin-bottom: 8rpx;
 }
 
 .feeling-subtitle {
-  font-size: 22rpx;
-  color: #9CA3AF;
+  font-size: 24rpx;
+  color: #34D399; /* Emerald-400 */
+  font-weight: 500;
 }
 
 /* Insight Card */

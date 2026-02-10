@@ -4,9 +4,7 @@
     <view class="header-section">
       <view class="nav-row">
         <view class="back-btn" @click="goBack">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 19L8 12L15 5" stroke="#1A1D26" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <uni-icons type="back" size="24" color="#1A1D26"></uni-icons>
         </view>
         <view class="date-tag">
           <picker mode="time" :value="time" @change="bindTimeChange">
@@ -37,9 +35,7 @@
               <view class="avatar-circle">
                 <text>{{ item.name[0] }}</text>
                 <view class="active-badge" v-if="relation === item.name">
-                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 16.2L4.8 12L3.4 13.4L9 19L21 7L19.6 5.6L9 16.2Z" fill="white"/>
-                   </svg>
+                   <uni-icons type="checkmarkempty" size="10" color="white"></uni-icons>
                 </view>
               </view>
               <text class="avatar-name">{{ item.name }}</text>
@@ -47,9 +43,7 @@
             
             <view class="avatar-item" @click="navigateToAddFamily">
               <view class="avatar-circle add">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                   <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="#9CA3AF"/>
-                </svg>
+                <uni-icons type="plusempty" size="20" color="#9CA3AF"></uni-icons>
               </view>
               <text class="avatar-name">添加</text>
             </view>
@@ -145,10 +139,7 @@
     <view class="fab-container">
       <view class="fab-btn" @click="saveRecord">
         <text class="fab-text">完成记录</text>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12H19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M12 5L19 12L12 19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <uni-icons type="arrowright" size="24" color="white"></uni-icons>
       </view>
     </view>
   </view>
