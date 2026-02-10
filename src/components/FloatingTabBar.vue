@@ -5,31 +5,25 @@
     
     <view class="bottom-nav">
        <view class="nav-item" :class="{ active: currentTab === 0 }" @click="handleNav(0)">
-         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2.09998L2 10.6V20.5C2 21.3 2.7 22 3.5 22H20.5C21.3 22 22 21.3 22 20.5V10.6L12 2.09998Z" :fill="currentTab === 0 ? '#00E676' : '#999999'"/>
-         </svg>
+         <image :src="currentTab === 0 ? iconMap.homeActive : iconMap.home" class="nav-icon" mode="aspectFit" />
+         <text class="nav-text">首页</text>
        </view>
        <view class="nav-item" :class="{ active: currentTab === 1 }" @click="handleNav(1)">
-         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 20H6C5.45 20 5 19.55 5 19V5C5 4.45 5.45 4 6 4H18C18.55 4 19 4.45 19 5V19C19 19.55 18.55 20 18 20ZM7 18H17V6H7V18ZM8 16H10V11H8V16ZM11 16H13V8H11V16ZM14 16H16V13H14V16Z" :fill="currentTab === 1 ? '#00E676' : '#999999'"/>
-         </svg>
+         <image :src="currentTab === 1 ? iconMap.calendarActive : iconMap.calendar" class="nav-icon" mode="aspectFit" />
+         <text class="nav-text">日报</text>
        </view>
        <view class="nav-item-center" @click="handleNav(2)">
          <view class="center-btn">
-           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-             <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="white"/>
-           </svg>
+           <view class="plus-icon"></view>
          </view>
        </view>
        <view class="nav-item" :class="{ active: currentTab === 3 }" @click="handleNav(3)">
-         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H6L4 18V4H20V16Z" :fill="currentTab === 3 ? '#00E676' : '#999999'"/>
-         </svg>
+         <image :src="currentTab === 3 ? iconMap.chatActive : iconMap.chat" class="nav-icon" mode="aspectFit" />
+         <text class="nav-text">玩耍</text>
        </view>
        <view class="nav-item" :class="{ active: currentTab === 4 }" @click="handleNav(4)">
-         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M19.43 12.98C19.47 12.66 19.5 12.34 19.5 12C19.5 11.66 19.47 11.34 19.43 11.02L21.54 9.37C21.73 9.22 21.78 8.95 21.66 8.73L19.66 5.27C19.54 5.05 19.27 4.96 19.05 5.05L16.56 6.05C16.04 5.66 15.5 5.32 14.87 5.07L14.5 2.42C14.46 2.18 14.25 2 14 2H10C9.75 2 9.54 2.18 9.5 2.42L9.13 5.07C8.5 5.32 7.96 5.66 7.44 6.05L4.95 5.05C4.73 4.96 4.46 5.05 4.34 5.27L2.34 8.73C2.21 8.95 2.27 9.22 2.46 9.37L4.57 11.02C4.53 11.34 4.5 11.67 4.5 12C4.5 12.33 4.53 12.66 4.57 12.98L2.46 14.63C2.27 14.78 2.21 15.05 2.34 15.27L4.34 18.73C4.46 18.95 4.73 19.04 4.95 18.95L7.44 17.95C7.96 18.34 8.5 18.68 9.13 18.93L9.5 21.58C9.54 21.82 9.75 22 10 22H14C14.25 22 14.46 21.82 14.5 21.58L14.87 18.93C15.5 18.67 16.04 18.34 16.56 17.95L19.05 18.95C19.27 19.04 19.54 18.95 19.66 18.73L21.66 15.27C21.78 15.05 21.73 14.78 21.54 14.63L19.43 12.98ZM12 15.5C10.07 15.5 8.5 13.93 8.5 12C8.5 10.07 10.07 8.5 12 8.5C13.93 8.5 15.5 10.07 15.5 12C15.5 13.93 13.93 15.5 12 15.5Z" :fill="currentTab === 4 ? '#00E676' : '#999999'"/>
-         </svg>
+         <image :src="currentTab === 4 ? iconMap.userActive : iconMap.user" class="nav-icon" mode="aspectFit" />
+         <text class="nav-text">我的</text>
        </view>
     </view>
   </view>
@@ -37,6 +31,18 @@
 
 <script setup>
 import { computed } from 'vue'
+
+// Base64 Icons to avoid dependencies
+const iconMap = {
+  home: 'data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10%2020v-6h4v6h5v-8h3L12%203%202%2012h3v8h5z%22%20fill%3D%22%23CCCCCC%22%2F%3E%3C%2Fsvg%3E',
+  homeActive: 'data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10%2020v-6h4v6h5v-8h3L12%203%202%2012h3v8h5z%22%20fill%3D%22%2300E676%22%2F%3E%3C%2Fsvg%3E',
+  calendar: 'data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M19%203h-1V1h-2v2H8V1H6v2H5c-1.11%200-2%20.9-2%202v14c0%201.1.89%202%202%202h14c1.1%200%202-.9%202-2V5c0-1.1-.9-2-2-2zm0%2016H5V8h14v11z%22%20fill%3D%22%23CCCCCC%22%2F%3E%3C%2Fsvg%3E',
+  calendarActive: 'data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M17%2012h-5v5h5v-5zM16%201v2H8V1H6v2H5c-1.11%200-1.99.9-1.99%202L3%2019c0%201.1.89%202%202%202h14c1.1%200%202-.9%202-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3%2018H5V8h14v11z%22%20fill%3D%22%2300E676%22%2F%3E%3C%2Fsvg%3E',
+  chat: 'data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M20%202H4c-1.1%200-2%20.9-2%202v18l4-4h14c1.1%200%202-.9%202-2V4c0-1.1-.9-2-2-2z%22%20fill%3D%22%23CCCCCC%22%2F%3E%3C%2Fsvg%3E',
+  chatActive: 'data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M20%202H4c-1.1%200-2%20.9-2%202v18l4-4h14c1.1%200%202-.9%202-2V4c0-1.1-.9-2-2-2z%22%20fill%3D%22%2300E676%22%2F%3E%3C%2Fsvg%3E',
+  user: 'data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M12%2012c2.21%200%204-1.79%204-4s-1.79-4-4-4-4%201.79-4%204%201.79%204%204%204zm0%202c-2.67%200-8%201.34-8%204v2h16v-2c0-2.66-5.33-4-8-4z%22%20fill%3D%22%23CCCCCC%22%2F%3E%3C%2Fsvg%3E',
+  userActive: 'data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M12%2012c2.21%200%204-1.79%204-4s-1.79-4-4-4-4%201.79-4%204%201.79%204%204%204zm0%202c-2.67%200-8%201.34-8%204v2h16v-2c0-2.66-5.33-4-8-4z%22%20fill%3D%22%2300E676%22%2F%3E%3C%2Fsvg%3E'
+}
 
 const props = defineProps({
   current: {
@@ -113,11 +119,67 @@ const handleNav = (index) => {
 }
 
 .nav-item {
-  width: 80rpx;
-  height: 80rpx;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 100%;
+  flex: 1;
+}
+
+.nav-text {
+  font-size: 24rpx;
+  margin-top: 6rpx;
+  color: #CCCCCC;
+  font-weight: 500;
+}
+
+.nav-item.active .nav-text {
+  color: #00E676;
+  font-weight: 600;
+}
+
+.nav-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.nav-text-center {
+  position: absolute;
+  bottom: 0rpx;
+  font-size: 20rpx;
+  color: #CCCCCC;
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
+}
+
+.plus-icon {
+  width: 40rpx;
+  height: 40rpx;
+  position: relative;
+}
+
+.plus-icon::before,
+.plus-icon::after {
+  content: '';
+  position: absolute;
+  background-color: #fff;
+  border-radius: 4rpx;
+}
+
+.plus-icon::before {
+  width: 4rpx;
+  height: 40rpx;
+  left: 18rpx;
+  top: 0;
+}
+
+.plus-icon::after {
+  width: 40rpx;
+  height: 4rpx;
+  top: 18rpx;
+  left: 0;
 }
 
 .nav-item-center {
