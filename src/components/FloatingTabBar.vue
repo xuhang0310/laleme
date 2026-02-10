@@ -23,7 +23,7 @@
        </view>
        <view class="nav-item" :class="{ active: currentTab === 4 }" @click="handleNav(4)">
          <image :src="currentTab === 4 ? iconMap.userActive : iconMap.user" class="nav-icon" mode="aspectFit" />
-         <text class="nav-text">我的</text>
+         <text class="nav-text">萌宠</text>
        </view>
     </view>
   </view>

@@ -2,13 +2,7 @@
   <view class="container">
     <!-- Custom Header -->
     <view class="custom-header">
-      <view class="back-btn" @click="goBack">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M19 12H5" stroke="#1A1D26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M12 19L5 12L12 5" stroke="#1A1D26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </view>
-      <text class="header-title">设置</text>
+      <text class="header-title" style="text-align: center;">设置</text>
       <view class="header-right"></view>
     </view>
 
@@ -17,14 +11,14 @@
       <view class="profile-section">
         <view class="avatar-container">
           <view class="avatar-ring">
-            <image class="avatar-img" src="/static/puppy.png" mode="aspectFill"></image>
+            <image class="avatar-img" src="../../static/puppy_katong.png" mode="aspectFill"></image>
           </view>
-          <view class="edit-badge">
+          <!-- <view class="edit-badge">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M18.5 2.50001C18.8978 2.10219 19.4374 1.87869 20 1.87869C20.5626 1.87869 21.1022 2.10219 21.5 2.50001C21.8978 2.89784 22.1213 3.4374 22.1213 4.00001C22.1213 4.56262 21.8978 5.10219 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-          </view>
+          </view> -->
         </view>
         <text class="pet-name">巴迪</text>
         <text class="pet-level">12 级如厕萌宠伴侣</text>
@@ -38,14 +32,14 @@
         <view class="list-group">
           <view class="list-item" @click="handleItemClick('profile')">
             <view class="item-left">
-              <view class="icon-box green-light">
+              <!-- <view class="icon-box green-light">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="#00E676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="#00E676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-              </view>
+              </view> -->
               <view class="text-content">
-                <text class="item-title">个人资料设置</text>
+                <text class="item-title">萌宠资料设置</text>
                 <text class="item-subtitle">更新宠物名称和简介</text>
               </view>
             </view>
@@ -58,10 +52,10 @@
         </view>
 
         <!-- Preferences -->
-        <text class="section-label">偏好设置</text>
-        <view class="list-group">
+        <!-- <text class="section-label">偏好设置</text>
+        <view class="list-group"> -->
           <!-- Notifications -->
-          <view class="list-item border-bottom">
+          <!-- <view class="list-item border-bottom">
             <view class="item-left">
               <view class="icon-box green-light">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -77,10 +71,10 @@
             <view class="item-right">
               <switch :checked="notificationsEnabled" color="#00E676" style="transform:scale(0.8)" @change="toggleNotifications" />
             </view>
-          </view>
+          </view> -->
 
           <!-- Theme -->
-          <view class="list-item" @click="handleItemClick('theme')">
+          <!-- <view class="list-item" @click="handleItemClick('theme')">
             <view class="item-left">
               <view class="icon-box green-light">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -99,11 +93,11 @@
               </svg>
             </view>
           </view>
-        </view>
+        </view> -->
 
         <!-- Health & Data -->
-        <text class="section-label">健康数据</text>
-        <view class="list-group">
+        <!-- <text class="section-label">健康数据</text> -->
+        <!-- <view class="list-group">
           <view class="list-item" @click="handleItemClick('health')">
             <view class="item-left">
               <view class="icon-box green-light">
@@ -123,10 +117,10 @@
                 <path d="M9 18L15 12L9 6" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </view>
-          </view>
+          </view> -->
 
           <!-- Export Health Data -->
-          <view class="list-item" @click="handleItemClick('export')">
+          <!-- <view class="list-item" @click="handleItemClick('export')">
             <view class="item-left">
               <view class="icon-box green-light">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -147,10 +141,10 @@
               </svg>
             </view>
           </view>
-        </view>
+        </view> -->
 
         <!-- Support -->
-        <text class="section-label">支持服务</text>
+        <!-- <text class="section-label">支持服务</text>
         <view class="list-group">
           <view class="list-item" @click="handleItemClick('about')">
             <view class="item-left">
@@ -172,21 +166,9 @@
               </svg>
             </view>
           </view>
-        </view>
+        </view> -->
 
-        <!-- Logout & Version -->
-        <view class="footer-actions">
-          <view class="logout-btn" @click="handleItemClick('logout')">
-            <svg class="logout-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="#FF5252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M16 17L21 12L16 7" stroke="#FF5252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M21 12H9" stroke="#FF5252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <text>退出登录</text>
-          </view>
-          
-          <text class="version-text">当前版本 2.4.1</text>
-        </view>
+       
 
         <!-- Extra spacing for navbar -->
         <view style="height: 120rpx;"></view>
@@ -234,10 +216,10 @@ page {
 }
 
 .custom-header {
-  padding-top: 100rpx; /* Status bar spacing */
+  padding-top: 30rpx; /* Status bar spacing */
   padding-left: 30rpx;
   padding-right: 30rpx;
-  padding-bottom: 20rpx;
+  padding-bottom: 30rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
