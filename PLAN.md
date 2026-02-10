@@ -84,6 +84,22 @@
 ### 3.6 饥饿与状态机制 (Hunger Mechanics)
 *(Merged into 3.3)*
 
+## 4. 质量保证与开发工具 (QA & DevTools)
+
+为了确保长周期养成逻辑的健壮性，开发环境需内置调试工具。
+
+### 4.1 调试面板 (God Mode)
+*   **环境限制**: 仅在 `process.env.NODE_ENV === 'development'` 下显示。
+*   **功能**:
+    *   **时间机器**: 模拟“快进 1小时 / 1天”，验证饥饿衰减。
+    *   **状态编辑**: 一键设置 饱食度=0 (验证极饿交互) 或 100 (验证满腹逻辑)。
+    *   **资产注入**: 一键获得 500g 狗粮 (验证仓储上限)。
+
+### 4.2 边界交互定义 (Edge Cases)
+*   **收益递减**: 第 4 次记录时，弹出 Toast: "今天奖励已领完，明天继续哦！" (非静默失败)。
+*   **仓储溢出**: 狗粮 > 300g 时，弹出 Modal: "粮仓已满，快给小狗喂食吧！" (阻止领取)。
+*   **极饿状态**: 点击小狗时不播放动画，仅弹出气泡: "饿得动不了了..."。
+
 ## 5. 互动系统详解 (Chat System) - 页面核心功能规划
 
 Chat 页面不再仅仅是一个聊天窗口，而是一个“互动庄园”。三个核心按钮将行为与数据紧密联动。
@@ -133,16 +149,16 @@ Chat 页面不再仅仅是一个聊天窗口，而是一个“互动庄园”。
 ## 6. 技术执行架构 (Technical Implementation)
 
 ### 6.1 数据模型 (Data Schema)
-采用本地存储 (`uni.setStorage`) 优先策略，确保隐私和极速体验。
+采用本地存储 (`uni.setStorage`) 配合 **Pinia** 进行状态管理。
 
 ```javascript
 // 核心状态管理 (Store)
+// 使用 Pinia + pinia-plugin-persistedstate
 interface PetState {
   // 基础属性
   name: string;
   level: number;      // 等级
   exp: number;        // 当前经验/亲密度
-  food: number;       // 剩余狗粮 (g)
   
   // 状态属性 (0-100)
   hunger: number;     // 饥饿度 (随时间衰减)
@@ -150,27 +166,32 @@ interface PetState {
   
   // 系统属性
   lastLoginDate: string; // 签到判断
-  lastInteraction: number; // 上次互动时间戳
+  lastInteraction: number; // 上次互动时间戳 (防作弊基准)
+}
+
+interface UserState {
+  food: number;       // 剩余狗粮 (g) - 独立管理
+  dailyRecordCount: number; // 今日记录次数
+  lastRecordDate: string;   // 记录日期重置依据
 }
 ```
 
 ### 6.2 核心模块开发规划
 
-#### 阶段一：注入灵魂 (已完成)
-- [x] 实现首页小狗的 CSS "呼吸" 动画。
-- [x] 绑定点击事件，实现“抚摸震动”与 Q 弹反馈。
-- [x] 手指跟随视差效果。
-- [x] 沉浸式庄园场景搭建。
+#### 阶段一：基础架构 (新增)
+- [ ] **环境搭建**: 安装 `pinia` 和 `pinia-plugin-persistedstate`。
+- [ ] **Store 拆分**: 实现 `usePetStore` 和 `useUserStore`。
+- [ ] **DevTools**: 开发侧边悬浮调试球。
 
-#### 阶段二：建立账本 (当前重点)
-- [ ] **Store 封装**: 创建 `usePetStore`，实现数据的读取与持久化。
+#### 阶段二：建立账本 (核心业务)
 - [ ] **领狗粮功能**: 实现任务弹窗 UI 及“签到/跳转”逻辑。
 - [ ] **喂食闭环**: 连通“喂食”按钮 -> 扣除狗粮 -> 播放抛物线动画 -> 更新 UI。
+- [ ] **防刷逻辑**: 实现“收益递减”和“仓储上限”判断。
 
-#### 阶段三：深度互动
+#### 阶段三：视觉与交互 (UI/UX)
+- [ ] **资产补全**: 替换 `puppy_hugry` 为正确的 `puppy_hungry`，补充 Starving/Happy 状态图。
 - [ ] **聊天界面**: 开发覆盖式聊天窗口 UI。
-- [ ] **业务联动**: 改造“记录便便”流程，保存成功后弹出“获得 50g 狗粮”奖励提示。
-- [ ] **自动签到**: 实现每日首次打开自动检测签到逻辑。
+
 
 ## 7. 未来扩展 (Future)
 - **云端同步**: 接入 uniCloud，防止数据丢失。
