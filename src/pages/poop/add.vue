@@ -1,57 +1,104 @@
 <template>
   <view class="container">
     <!-- Header Area -->
-    <view class="header-section">
-      <view class="nav-row">
-        <view class="back-btn" @click="goBack">
-          <uni-icons type="back" size="24" color="#1A1D26"></uni-icons>
-        </view>
-        <view class="date-tag">
-          <picker mode="time" :value="time" @change="bindTimeChange">
-            <text>{{ time }}</text>
-          </picker>
-        </view>
+    <view class="custom-header">
+      <view class="back-btn" @click="goBack">
+        <uni-icons type="back" size="24" color="#1A1D26"></uni-icons>
       </view>
-      <view class="title-row">
-        <text class="sub-text">今天感觉如何？</text>
-        <text class="main-text">记录便便</text>
-      </view>
+      <text class="header-title">记录便便</text>
+      <view class="header-right"></view>
     </view>
 
     <scroll-view scroll-y class="content-scroll" :show-scrollbar="false">
       
-      <!-- 1. Who (Relation) -->
-      <view class="section-card">
-        <text class="section-label">记录对象</text>
-        <scroll-view scroll-x class="avatar-scroll" :show-scrollbar="false">
-          <view class="avatar-wrapper">
-            <view 
-              class="avatar-item" 
-              v-for="(item, index) in familyMembers" 
-              :key="index"
-              :class="{ active: relation === item.name }"
-              @click="selectRelation(item)"
-            >
-              <view class="avatar-circle">
-                <text>{{ item.name[0] }}</text>
-                <view class="active-badge" v-if="relation === item.name">
-                   <uni-icons type="checkmarkempty" size="10" color="white"></uni-icons>
-                </view>
-              </view>
-              <text class="avatar-name">{{ item.name }}</text>
+      <!-- 0. Record Type & Time -->
+      <view class="section-card first-card">
+        <view class="type-switch">
+             <view 
+               class="type-btn" 
+               :class="{ active: recordType === 'poop' }"
+               @click="recordType = 'poop'"
+             >
+               💩 顺利排便
+             </view>
+             <view 
+               class="type-btn" 
+               :class="{ active: recordType === 'no_poop' }"
+               @click="recordType = 'no_poop'"
+             >
+               😣 没拉出来
+             </view>
+        </view>
+        
+        <view class="divider"></view>
+        
+        <picker mode="time" :value="time" @change="bindTimeChange" class="time-picker-row">
+            <text class="label">时间</text>
+            <view class="time-value">
+                <text>{{ time }}</text>
+                <uni-icons type="right" size="14" color="#9CA3AF"></uni-icons>
             </view>
-            
-            <view class="avatar-item" @click="navigateToAddFamily">
-              <view class="avatar-circle add">
-                <uni-icons type="plusempty" size="20" color="#9CA3AF"></uni-icons>
-              </view>
-              <text class="avatar-name">添加</text>
-            </view>
-          </view>
-        </scroll-view>
+        </picker>
       </view>
+      
+      <template v-if="recordType === 'poop'">
+        <!-- 1. Shape & Color -->
+        <view class="section-card">
+            <text class="section-label">性状与颜色</text>
+            
+            <view class="chips-group">
+            <scroll-view scroll-x class="chips-scroll" :show-scrollbar="false">
+                <view class="chips-row">
+                <view 
+                    class="chip" 
+                    v-for="(item, index) in shapes" 
+                    :key="index"
+                    :class="{ active: shapeIndex === index }"
+                    @click="shapeIndex = index"
+                >
+                    {{ item }}
+                </view>
+                </view>
+            </scroll-view>
+            
+            <view style="height: 24rpx;"></view>
+            
+            <scroll-view scroll-x class="chips-scroll" :show-scrollbar="false">
+                <view class="chips-row">
+                <view 
+                    class="chip color-chip" 
+                    v-for="(item, index) in colors" 
+                    :key="index"
+                    :class="{ active: colorIndex === index }"
+                    @click="colorIndex = index"
+                >
+                    <view class="color-dot" :style="{ backgroundColor: getColorCode(item) }"></view>
+                    <text>{{ item }}</text>
+                </view>
+                </view>
+            </scroll-view>
+            </view>
+        </view>
 
-      <!-- 2. Feeling (Grid Layout) -->
+        <!-- 2. Amount (New) -->
+        <view class="section-card">
+            <text class="section-label">分量</text>
+            <view class="amount-selector">
+                <view 
+                    class="amount-btn" 
+                    v-for="(item, index) in amounts" 
+                    :key="index"
+                    :class="{ active: amountIndex === index }"
+                    @click="amountIndex = index"
+                >
+                    <text class="amount-icon" :style="{ transform: `scale(${0.8 + index * 0.2})` }">💩</text>
+                    <text>{{ item }}</text>
+                </view>
+            </view>
+        </view>
+      </template>
+
+      <!-- 3. Feeling -->
       <view class="section-card">
         <text class="section-label">排便感受</text>
         <view class="feeling-grid">
@@ -64,7 +111,6 @@
           >
             <text class="emoji">{{ item.emoji }}</text>
             <text class="title">{{ item.title }}</text>
-            <text class="desc">{{ item.desc }}</text>
             
             <!-- Custom Input for last item -->
             <input 
@@ -79,45 +125,23 @@
         </view>
       </view>
 
-      <!-- 3. Shape & Color (Chips) -->
+      <!-- 4. Symptoms (New) -->
       <view class="section-card">
-        <text class="section-label">形状与颜色</text>
-        
-        <view class="chips-group">
-          <scroll-view scroll-x class="chips-scroll" :show-scrollbar="false">
-            <view class="chips-row">
-              <view 
-                class="chip" 
-                v-for="(item, index) in shapes" 
+        <text class="section-label">异常与症状 (多选)</text>
+        <view class="tags-container">
+            <view 
+                class="tag-item"
+                v-for="(item, index) in symptoms"
                 :key="index"
-                :class="{ active: shapeIndex === index }"
-                @click="shapeIndex = index"
-              >
+                :class="{ active: selectedSymptoms.includes(item) }"
+                @click="toggleSymptom(item)"
+            >
                 {{ item }}
-              </view>
             </view>
-          </scroll-view>
-          
-          <view style="height: 20rpx;"></view>
-          
-          <scroll-view scroll-x class="chips-scroll" :show-scrollbar="false">
-             <view class="chips-row">
-              <view 
-                class="chip color-chip" 
-                v-for="(item, index) in colors" 
-                :key="index"
-                :class="{ active: colorIndex === index }"
-                @click="colorIndex = index"
-              >
-                <view class="color-dot" :style="{ backgroundColor: getColorCode(item) }"></view>
-                <text>{{ item }}</text>
-              </view>
-             </view>
-          </scroll-view>
         </view>
       </view>
 
-      <!-- 4. Notes -->
+      <!-- 5. Notes -->
       <view class="section-card">
         <text class="section-label">备注</text>
         <view class="note-box">
@@ -147,37 +171,15 @@
 
 <script setup>
 import { ref } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
-
-const familyMembers = ref([])
-
-onShow(() => {
-  loadFamilyMembers()
-})
-
-const loadFamilyMembers = () => {
-  const storedMembers = uni.getStorageSync('family_members') || []
-  const defaultMember = { name: '本人' }
-  familyMembers.value = [defaultMember, ...storedMembers]
-}
 
 const goBack = () => {
   uni.navigateBack()
 }
 
-const selectRelation = (item) => {
-  relation.value = item.name
-}
-
-const navigateToAddFamily = () => {
-  uni.navigateTo({
-    url: '/pages/family/add'
-  })
-}
-
 const now = new Date()
 const time = ref(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`)
 
+const recordType = ref('poop') // 'poop' or 'no_poop'
 const relation = ref('本人')
 
 const shapes = ['香蕉状', '羊粪球', '糊状', '水状', '硬条状']
@@ -185,6 +187,20 @@ const shapeIndex = ref(0)
 
 const colors = ['棕色', '黄色', '绿色', '黑色', '红色']
 const colorIndex = ref(0)
+
+const amounts = ['少', '适中', '多']
+const amountIndex = ref(1)
+
+const symptoms = ['带血', '粘液', '未消化', '恶臭', '排便不尽', '腹痛']
+const selectedSymptoms = ref([])
+
+const toggleSymptom = (item) => {
+    if (selectedSymptoms.value.includes(item)) {
+        selectedSymptoms.value = selectedSymptoms.value.filter(i => i !== item)
+    } else {
+        selectedSymptoms.value.push(item)
+    }
+}
 
 const getColorCode = (name) => {
   const map = {
@@ -239,8 +255,12 @@ const saveRecord = () => {
     date: new Date().toLocaleDateString(),
     time: time.value,
     relation: relation.value,
-    shape: shapes[shapeIndex.value],
-    color: colors[colorIndex.value],
+    type: recordType.value,
+    // Only save shape/color/amount if recordType is poop
+    shape: recordType.value === 'poop' ? shapes[shapeIndex.value] : '无',
+    color: recordType.value === 'poop' ? colors[colorIndex.value] : '无',
+    amount: recordType.value === 'poop' ? amounts[amountIndex.value] : '无',
+    symptoms: selectedSymptoms.value,
     feeling: selectedFeeling.title,
     duration: duration,
     note: note.value,
@@ -285,148 +305,70 @@ page {
   flex-direction: column;
 }
 
-.header-section {
-  padding: 100rpx 40rpx 40rpx;
-  background: transparent;
-  
-  .nav-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40rpx;
-    
-    .back-btn {
-      width: 80rpx;
-      height: 80rpx;
-      background: white;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
-      
-      &:active {
-        transform: scale(0.95);
-      }
-    }
-    
-    .date-tag {
-      background: white;
-      padding: 12rpx 30rpx;
-      border-radius: 40rpx;
-      font-size: 28rpx;
-      font-weight: 600;
-      color: #1A1D26;
-      box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
-    }
-  }
-  
-  .title-row {
-    display: flex;
-    flex-direction: column;
-    
-    .sub-text {
-      font-size: 28rpx;
-      color: #00E676;
-      font-weight: 500;
-      margin-bottom: 8rpx;
-    }
-    
-    .main-text {
-      font-size: 56rpx;
-      color: #1A1D26;
-      font-weight: 800;
-      letter-spacing: -1rpx;
-    }
-  }
+.custom-header {
+  padding-top: 30rpx;
+  padding-left: 30rpx;
+  padding-right: 30rpx;
+  padding-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent;
+}
+
+.back-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #1A1D26;
+}
+
+.header-right {
+  min-width: 60rpx;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.time-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #00E676;
+  background: #E8F5E9;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
 }
 
 .content-scroll {
   flex: 1;
-  padding: 0 40rpx;
+  padding: 0 30rpx;
   box-sizing: border-box;
 }
 
 .section-card {
-  margin-bottom: 50rpx;
+  background: white;
+  border-radius: 40rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.02);
   
-  .section-label {
-    font-size: 32rpx;
-    font-weight: 700;
-    color: #1A1D26;
-    margin-bottom: 30rpx;
-    display: block;
+  &.first-card {
+    margin-top: 10rpx;
   }
-}
 
-.avatar-scroll {
-  white-space: nowrap;
-  width: 100%;
-  
-  .avatar-wrapper {
-    display: flex;
-    gap: 30rpx;
-    padding: 10rpx 0;
-  }
-  
-  .avatar-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16rpx;
-    
-    .avatar-circle {
-      width: 100rpx;
-      height: 100rpx;
-      border-radius: 50%;
-      background: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 36rpx;
-      font-weight: 600;
-      color: #9CA3AF;
-      box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
-      border: 4rpx solid transparent;
-      transition: all 0.2s;
-      position: relative;
-      
-      &.add {
-        border: 4rpx dashed #E5E7EB;
-        box-shadow: none;
-      }
-      
-      .active-badge {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 32rpx;
-        height: 32rpx;
-        background: #00E676;
-        border-radius: 50%;
-        border: 4rpx solid white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-    
-    &.active .avatar-circle {
-      border-color: #00E676;
-      color: #1A1D26;
-      transform: scale(1.05);
-    }
-    
-    .avatar-name {
-      font-size: 24rpx;
-      color: #6B7280;
-      font-weight: 500;
-    }
-    
-    &.active .avatar-name {
-      color: #1A1D26;
-      font-weight: 600;
-    }
+  .section-label {
+    font-size: 24rpx;
+    font-weight: 600;
+    color: #9CA3AF;
+    margin-bottom: 16rpx;
+    display: block;
   }
 }
 
@@ -436,15 +378,14 @@ page {
   gap: 24rpx;
   
   .feeling-box {
-    background: white;
-    border-radius: 32rpx;
-    padding: 30rpx;
+    background: #F9FAFB;
+    border-radius: 24rpx;
+    padding: 24rpx;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    border: 4rpx solid transparent;
+    border: 2rpx solid transparent;
     transition: all 0.2s;
-    box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.02);
     position: relative;
     
     &.custom {
@@ -454,31 +395,23 @@ page {
       
       .emoji { margin-bottom: 0; margin-right: 20rpx; }
       .title { margin-bottom: 0; margin-right: 20rpx; }
-      .desc { display: none; }
     }
     
     &.active {
       border-color: #00E676;
-      background: #F0FDF4;
-      box-shadow: 0 8rpx 24rpx rgba(0, 230, 118, 0.15);
+      background: #ECFDF5;
     }
     
     .emoji {
-      font-size: 48rpx;
-      margin-bottom: 16rpx;
+      font-size: 40rpx;
+      margin-bottom: 12rpx;
     }
     
     .title {
-      font-size: 30rpx;
-      font-weight: 700;
+      font-size: 28rpx;
+      font-weight: 600;
       color: #1A1D26;
-      margin-bottom: 8rpx;
-    }
-    
-    .desc {
-      font-size: 24rpx;
-      color: #9CA3AF;
-      font-weight: 500;
+      margin-bottom: 6rpx;
     }
     
     .custom-input {
@@ -493,6 +426,123 @@ page {
   }
 }
 
+.type-switch {
+  display: flex;
+  background: #F3F4F6;
+  border-radius: 20rpx;
+  padding: 8rpx;
+  margin-bottom: 30rpx;
+  
+  .type-btn {
+    flex: 1;
+    text-align: center;
+    padding: 16rpx 0;
+    font-size: 28rpx;
+    font-weight: 600;
+    color: #6B7280;
+    border-radius: 16rpx;
+    transition: all 0.2s;
+    
+    &.active {
+      background: white;
+      color: #1A1D26;
+      box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+    }
+  }
+}
+
+.divider {
+  height: 2rpx;
+  background: #F3F4F6;
+  margin: 0 -30rpx 30rpx -30rpx;
+}
+
+.time-picker-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10rpx 0;
+  
+  .label {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: #1A1D26;
+  }
+  
+  .time-value {
+    display: flex;
+    align-items: center;
+    gap: 10rpx;
+    
+    text {
+      font-size: 32rpx;
+      font-weight: 700;
+      color: #00E676;
+    }
+  }
+}
+
+.amount-selector {
+    display: flex;
+    justify-content: space-between;
+    gap: 20rpx;
+    
+    .amount-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30rpx;
+        background: #F9FAFB;
+        border-radius: 24rpx;
+        border: 2rpx solid transparent;
+        transition: all 0.2s;
+        
+        &.active {
+            background: #ECFDF5;
+            border-color: #00E676;
+        }
+        
+        .amount-icon {
+            font-size: 40rpx;
+            margin-bottom: 16rpx;
+            display: block;
+        }
+        
+        text:last-child {
+            font-size: 26rpx;
+            font-weight: 600;
+            color: #4B5563;
+        }
+    }
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20rpx;
+    
+    .tag-item {
+        padding: 16rpx 32rpx;
+        background: #F9FAFB;
+        border-radius: 50rpx;
+        font-size: 26rpx;
+        color: #6B7280;
+        font-weight: 500;
+        border: 2rpx solid transparent;
+        transition: all 0.2s;
+        
+        &.active {
+            background: #FEF2F2;
+            color: #EF4444;
+            border-color: #FECACA;
+            font-weight: 600;
+        }
+    }
+}
+
+
 .chips-scroll {
   white-space: nowrap;
   width: 100%;
@@ -504,13 +554,12 @@ page {
 }
 
 .chip {
-  padding: 20rpx 40rpx;
-  background: white;
+  padding: 16rpx 32rpx;
+  background: #F9FAFB;
   border-radius: 50rpx;
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 500;
   color: #6B7280;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
   transition: all 0.2s;
   border: 2rpx solid transparent;
   
@@ -518,7 +567,7 @@ page {
     background: #1A1D26;
     color: white;
     transform: translateY(-2rpx);
-    box-shadow: 0 8rpx 20rpx rgba(26, 29, 38, 0.2);
+    box-shadow: 0 4rpx 12rpx rgba(26, 29, 38, 0.2);
   }
   
   &.color-chip {
@@ -527,8 +576,8 @@ page {
     gap: 12rpx;
     
     .color-dot {
-      width: 24rpx;
-      height: 24rpx;
+      width: 20rpx;
+      height: 20rpx;
       border-radius: 50%;
       border: 2rpx solid rgba(0,0,0,0.1);
     }
@@ -536,15 +585,14 @@ page {
 }
 
 .note-box {
-  background: white;
-  border-radius: 32rpx;
-  padding: 30rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.02);
+  background: #F9FAFB;
+  border-radius: 24rpx;
+  padding: 24rpx;
   
   .note-input {
     width: 100%;
     min-height: 100rpx;
-    font-size: 30rpx;
+    font-size: 28rpx;
     color: #1A1D26;
     line-height: 1.5;
   }

@@ -15,34 +15,17 @@
     </view>
     
     <view class="content-area">
-      <view class="filter-section">
-        <scroll-view scroll-x class="filter-scroll" :show-scrollbar="false">
-          <view class="filter-list">
-            <view 
-              class="filter-item" 
-              v-for="(item, index) in familyMembers" 
-              :key="index"
-              :class="{ active: currentFilter === item.name }"
-              @click="currentFilter = item.name"
-            >
-              <view class="filter-avatar-placeholder">{{ item.name[0] }}</view>
-              <text>{{ item.name }}</text>
-            </view>
-          </view>
-        </scroll-view>
-      </view>
-
-      <view class="section-header" v-if="filteredRecords.length > 0">
+      <view class="section-header" v-if="records.length > 0">
         <text class="section-title">最近记录</text>
       </view>
 
       <view class="record-list">
-        <view v-if="filteredRecords.length === 0" class="empty-state">
+        <view v-if="records.length === 0" class="empty-state">
           <image class="empty-img" src="https://img.yzcdn.cn/vant/empty-image-default.png" mode="widthFix"></image>
           <text class="empty-text">还没有记录哦，快去记一笔吧</text>
         </view>
         
-        <view v-else class="record-item" v-for="(item, index) in filteredRecords" :key="index">
+        <view v-else class="record-item" v-for="(item, index) in records" :key="index">
           <view 
             class="item-content" 
             :class="{ 'swiped': currentSwipedId === item.timestamp }"
@@ -57,7 +40,6 @@
               
               <view class="info-col">
                 <view class="tags-row">
-                  <view class="relation-tag" :class="getRelationClass(item.relation)">{{ item.relation || '本人' }}</view>
                   <view class="status-tag" :class="getStatusClass(item.color)">{{ item.shape }} · {{ item.color }}</view>
                 </view>
                 
@@ -84,13 +66,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import CustomTabBar from '@/components/CustomTabBar.vue'
 
 const records = ref([])
-const familyMembers = ref([])
-const currentFilter = ref('本人')
 const currentSwipedId = ref(null)
 const startX = ref(0)
 const startY = ref(0)
@@ -108,11 +88,6 @@ const updateGreeting = () => {
     greeting.value = '晚上好，'
   }
 }
-
-const filteredRecords = computed(() => {
-  if (!currentFilter.value) return records.value
-  return records.value.filter(item => (item.relation || '本人') === currentFilter.value)
-})
 
 const touchStart = (e, id) => {
   // close other swiped items
@@ -179,14 +154,6 @@ const goToReport = () => {
 const loadRecords = () => {
   const savedRecords = uni.getStorageSync('poop_records') || []
   records.value = savedRecords.reverse()
-  loadFamilyMembers()
-}
-
-const loadFamilyMembers = () => {
-  const storedMembers = uni.getStorageSync('family_members') || []
-  const defaultMember = { name: '本人' }
-  // Only add stored members if they are not "本人" (though "本人" shouldn't be in storedMembers usually)
-  familyMembers.value = [defaultMember, ...storedMembers]
 }
 
 const getFeelingEmoji = (feeling) => {
@@ -204,15 +171,6 @@ const formatDate = (dateStr) => {
   // 简单处理日期显示，如果是今天显示“今天”
   const today = new Date().toLocaleDateString()
   return dateStr === today ? '今天' : dateStr.slice(5) // 去掉年份
-}
-
-const getRelationClass = (relation) => {
-    const map = {
-        '本人': 'tag-me',
-        '小孩': 'tag-child',
-        '老人': 'tag-elder'
-    }
-    return map[relation] || 'tag-me'
 }
 
 const getStatusClass = (color) => {
@@ -286,55 +244,6 @@ onShow(() => {
     
     .icon {
       font-size: 14px;
-    }
-  }
-}
-
-.filter-section {
-  margin-bottom: 20px;
-  
-  .filter-scroll {
-    width: 100%;
-    white-space: nowrap;
-  }
-  
-  .filter-list {
-    display: flex;
-    gap: 12px;
-    padding-bottom: 4px;
-  }
-  
-  .filter-item {
-    display: flex;
-    align-items: center;
-    padding: 6px 16px;
-    background: white;
-    border-radius: 20px;
-    font-size: 14px;
-    color: #6B7280;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
-    transition: all 0.2s;
-    border: 1px solid transparent;
-    
-    &.active {
-      background: #1A1D26;
-      color: white;
-      font-weight: 500;
-      box-shadow: 0 4px 10px rgba(26, 29, 38, 0.2);
-    }
-    
-    .filter-avatar-placeholder {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      margin-right: 6px;
-      background: #E0E7FF;
-      color: #4B6EF6;
-      font-size: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
     }
   }
 }
@@ -444,17 +353,6 @@ onShow(() => {
       flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 8px;
-    }
-    
-    .relation-tag {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-weight: 600;
-      
-      &.tag-me { background: #EFF6FF; color: #4B6EF6; }
-      &.tag-child { background: #FFF1F2; color: #F43F5E; }
-      &.tag-elder { background: #F0FDF4; color: #22C55E; }
     }
     
     .status-tag {
