@@ -15,7 +15,7 @@
       <image 
         class="pet-avatar" 
         :class="{ 'breathing': !isInteracting, 'squeezed': isPressed }"
-        src="/static/puppy.png" 
+        src="/static/puppy_hugry.png" 
         mode="aspectFit"
       ></image>
     </view>
