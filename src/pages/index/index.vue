@@ -17,7 +17,7 @@
     </view>
 
     <!-- Action Buttons -->
-    <view class="action-buttons">
+    <view class="action-buttons" v-on:click="handleAction">
       <view class="action-btn">
         <image src="/static/hand.png" style="width: 36rpx; height: 36rpx; margin-right: 12rpx;" mode="aspectFit" />
         <text>抚摸</text>
@@ -28,9 +28,18 @@
       </view>
     </view>
 
-    <!-- Main Button -->
-    <view class="main-btn">
-       <text>记录如厕</text>
+    <!-- Snapshot Card -->
+    <view class="snapshot-card" @click="goToReport">
+       <view class="snapshot-left">
+          <view class="snapshot-icon">
+            <uni-icons :type="lastRecord ? 'checkmarkempty' : 'list'" size="24" color="#fff"></uni-icons>
+          </view>
+          <view class="snapshot-info">
+             <text class="snapshot-label">最近记录</text>
+             <text class="snapshot-value">{{ lastRecordText }}</text>
+          </view>
+       </view>
+       <uni-icons type="right" size="16" color="#9CA3AF"></uni-icons>
     </view>
 
     <!-- Stats -->
@@ -77,22 +86,86 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import FloatingTabBar from '@/components/FloatingTabBar.vue'
 import PetInteraction from '@/components/PetInteraction.vue'
 
 const title = ref('Home')
+const lastRecord = ref(null)
 
-const handleRecord = () => {
+onShow(() => {
+  loadLastRecord()
+})
+
+const loadLastRecord = () => {
+  const records = uni.getStorageSync('poop_records') || []
+  if (records.length > 0) {
+    // Sort by timestamp descending just in case, though usually appended
+    const sorted = [...records].sort((a, b) => b.timestamp - a.timestamp)
+    lastRecord.value = sorted[0]
+  } else {
+    lastRecord.value = null
+  }
+}
+
+const snapshotLabel = ref('最近记录')
+const isLongText = ref(false)
+
+const lastRecordText = computed(() => {
+  // 1. New User (No records at all)
+  if (!lastRecord.value && !uni.getStorageSync('has_used_before')) {
+    uni.setStorageSync('has_used_before', true) // Mark as used
+    snapshotLabel.value = '你好，主人！'
+    isLongText.value = true
+    return '我是巴迪，今后你的大便健康由我来守护'
+  }
+  
+  // 2. No record found (but used before - e.g. cleared data or just empty)
+  if (!lastRecord.value) {
+     snapshotLabel.value = '开始记录'
+     isLongText.value = false
+     return '暂无数据，快去记录一笔吧'
+  }
+  
+  // 3. Returning User (Long time no see > 3 days)
+  const lastTime = new Date(lastRecord.value.timestamp).getTime()
+  const nowTime = new Date().getTime()
+  const daysDiff = (nowTime - lastTime) / (1000 * 3600 * 24)
+  
+  if (daysDiff > 3) {
+      snapshotLabel.value = '好久不见'
+      isLongText.value = true
+      return '主人好久没来记录了，最近肠胃还好吗？记得多喝水哦~'
+  }
+  
+  // 4. Normal User (Standard record display)
+  snapshotLabel.value = '最近记录'
+  isLongText.value = false
+  const date = new Date(lastRecord.value.timestamp)
+  const now = new Date()
+  const isToday = date.toDateString() === now.toDateString()
+  
+  const timeStr = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+  const dayStr = isToday ? '今天' : `${date.getMonth() + 1}月${date.getDate()}日`
+  
+  const shapeStr = lastRecord.value.shape ? ` (${lastRecord.value.shape})` : ''
+  return `${dayStr} ${timeStr}${shapeStr}`
+})
+
+const goToReport = () => {
   uni.navigateTo({
-    url: '/pages/poop/add'
+    url: '/pages/poop/report'
   })
 }
 
+
 const handleAction = (action) => {
-  uni.showToast({
-    title: action + '功能开发中',
-    icon: 'none'
+  // Navigate to chat page
+  // We can pass the action type as a query parameter if needed in the future
+  // e.g. url: '/pages/chat/index?type=' + action
+  uni.navigateTo({
+    url: '/pages/chat/index'
   })
 }
 </script>
@@ -106,7 +179,7 @@ page {
 <style>
 .container {
   padding: 40rpx;
-  padding-top: 100rpx; /* Adjust for status bar */
+  padding-top: 30rpx; /* Adjust for status bar */
   background-color: #F8F9FA;
   min-height: 100vh;
   box-sizing: border-box;
@@ -116,7 +189,7 @@ page {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 60rpx;
+  margin-bottom: 30rpx;
 }
 
 .greeting {
@@ -171,21 +244,63 @@ page {
   font-weight: 500;
 }
 
-.main-btn {
+.snapshot-card {
+  background-color: #fff;
+  border-radius: 30rpx;
+  padding: 24rpx 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.03);
+}
+
+.snapshot-left {
+  display: flex;
+  align-items: center;
+  flex: 1; /* Allow left part to take available space */
+  overflow: hidden; /* Ensure overflow works inside flex */
+}
+
+.snapshot-icon {
+  width: 80rpx;
+  height: 80rpx;
   background-color: #00E676;
-  height: 100rpx;
-  border-radius: 50rpx;
+  border-radius: 24rpx;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 40rpx;
-  box-shadow: 0 8rpx 20rpx rgba(0, 230, 118, 0.3);
+  margin-right: 24rpx;
+  flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
-.main-btn text {
-  color: #fff;
-  font-size: 34rpx;
-  font-weight: bold;
+.snapshot-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Allow text to take remaining space */
+  margin-right: 20rpx; /* Space before arrow */
+}
+
+.snapshot-label {
+  font-size: 24rpx;
+  color: #9CA3AF;
+  margin-bottom: 4rpx;
+}
+
+.snapshot-value {
+  font-size: 30rpx;
+  color: #1F2937;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.snapshot-value.long-text {
+  font-size: 26rpx;
+  color: #4B5563;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 .stat-card {
