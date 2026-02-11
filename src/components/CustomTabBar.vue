@@ -2,10 +2,10 @@
   <view class="tab-bar">
     <view class="tab-bar-border"></view>
     
-    <!-- Item 1: 拉了么 -->
-    <view class="tab-item" @click="switchTab('/pages/poop/index')">
-      <text class="icon" :class="{ active: currentPath === 'pages/poop/index' }">💩</text>
-      <text class="text" :class="{ active: currentPath === 'pages/poop/index' }">拉了么</text>
+    <!-- Item 1: 首页 -->
+    <view class="tab-item" @click="switchTab('/pages/index/index')">
+      <text class="icon" :class="{ active: currentPath === 'pages/index/index' }">🏠</text>
+      <text class="text" :class="{ active: currentPath === 'pages/index/index' }">首页</text>
     </view>
 
     <!-- Item 2: 记一笔 (Center Button) -->
@@ -40,9 +40,17 @@ const currentPath = computed(() => {
 })
 
 const switchTab = (path) => {
-  uni.switchTab({
-    url: path
-  })
+  // 由于已移除原生 tabBar，使用 redirectTo 模拟 tab 切换，或者 navigateTo
+  // 如果是跳转到首页，建议使用 reLaunch 清除路由栈
+  if (path === '/pages/index/index') {
+    uni.reLaunch({
+      url: path
+    })
+  } else {
+    uni.redirectTo({
+      url: path
+    })
+  }
 }
 </script>
 

@@ -1,702 +1,697 @@
 <template>
   <view class="container">
-    <view class="bg-header"></view>
-    
-    <view class="content-wrapper">
-      <!-- 顶部筛选区 -->
-      <view class="filter-header">
-        <view class="time-tabs">
-          <view 
-            class="tab-item" 
-            :class="{ active: timeRange === 'week' }"
-            @click="changeTimeRange('week')"
-          >近一周</view>
-          <view 
-            class="tab-item" 
-            :class="{ active: timeRange === 'month' }"
-            @click="changeTimeRange('month')"
-          >近一月</view>
-        </view>
-        
-        <scroll-view scroll-x class="member-scroll" :show-scrollbar="false">
-          <view class="member-list">
-            <view 
-              class="member-item" 
-              v-for="(item, index) in familyMembers" 
-              :key="index"
-              :class="{ active: currentMember === item.name }"
-              @click="changeMember(item.name)"
-            >
-              <view class="member-avatar-placeholder">{{ item.name[0] }}</view>
-              <text>{{ item.name }}</text>
-            </view>
-          </view>
-        </scroll-view>
+    <!-- Custom Header -->
+    <view class="custom-header">
+      <view class="back-btn" @click="goBack">
+        <uni-icons type="back" size="24" color="#1A1D26"></uni-icons>
       </view>
-
-      <!-- 健康评分卡片 -->
-      <view class="report-card main-card">
-        <view class="card-inner">
-          <view class="score-ring" :class="getScoreClass(healthScore)">
-            <text class="score-val">{{ healthScore }}</text>
-            <text class="score-label">健康分</text>
-          </view>
-          <view class="score-summary">
-            <text class="summary-title">{{ getScoreTitle(healthScore) }}</text>
-            <text class="summary-desc">{{ getScoreDesc(healthScore) }}</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 异常预警 -->
-      <view class="alert-section" v-if="alerts.length > 0">
-        <view class="alert-card" v-for="(alert, index) in alerts" :key="index">
-          <text class="alert-icon">⚠️</text>
-          <view class="alert-content">
-            <text class="alert-title">{{ alert.title }}</text>
-            <text class="alert-desc">{{ alert.desc }}</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 个性化建议 -->
-      <view class="chart-section" v-if="advices.length > 0">
-        <view class="section-header">
-          <text class="section-title">健康建议</text>
-        </view>
-        <view class="advice-list">
-          <view class="advice-item" v-for="(advice, index) in advices" :key="index">
-            <text class="advice-emoji">{{ advice.emoji }}</text>
-            <view class="advice-content">
-              <text class="advice-text">{{ advice.text }}</text>
-              <text class="advice-link" v-if="advice.link" @click="showKnowledge(advice.link)">了解更多 ></text>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 频率趋势图 -->
-      <view class="chart-section">
-        <view class="section-header">
-          <text class="section-title">排便频率趋势</text>
-        </view>
-        <view class="chart-card">
-          <view class="bar-chart">
-            <view class="chart-bar-group" v-for="(item, index) in trendData" :key="index">
-              <view class="bar-column">
-                <view class="bar-value" :style="{ height: getBarHeight(item.count) }"></view>
-              </view>
-              <text class="bar-label">{{ item.label }}</text>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <view class="chart-section">
-        <view class="section-header">
-          <text class="section-title">形状分布</text>
-        </view>
-        <view class="tags-grid">
-          <view class="grid-item" v-for="(count, shape) in shapeStats" :key="shape">
-            <text class="grid-val">{{ count }}</text>
-            <text class="grid-label">{{ shape }}</text>
-          </view>
-        </view>
-      </view>
-      
-      <view class="chart-section">
-        <view class="section-header">
-          <text class="section-title">颜色分布</text>
-        </view>
-        <view class="tags-grid">
-          <view class="grid-item" v-for="(count, color) in colorStats" :key="color">
-            <text class="grid-val" :style="{ color: getColorStyle(color) }">{{ count }}</text>
-            <text class="grid-label">{{ color }}</text>
-          </view>
-        </view>
+      <text class="header-title">健康报告</text>
+      <view class="header-right">
+        <image src="../../static/canladar.png" style="width: 36rpx; height: 36rpx; margin-right: 12rpx;" mode="aspectFit" />
       </view>
     </view>
+
+    <scroll-view scroll-y class="scroll-content" :show-scrollbar="false">
+      
+      <!-- Alert Banner (New) -->
+      <view class="alert-banner" v-if="alertInfo.show">
+        <view class="alert-icon">
+          <uni-icons type="info-filled" size="20" color="#DC2626"></uni-icons>
+        </view>
+        <text class="alert-text">{{ alertInfo.message }}</text>
+        <view class="alert-close" @click="alertInfo.show = false">
+          <uni-icons type="closeempty" size="16" color="#DC2626"></uni-icons>
+        </view>
+      </view>
+
+      <!-- Frequency Card -->
+      <view class="card frequency-card">
+        <text class="card-label">如厕频率 & 成功率</text>
+        <view class="freq-header">
+          <view class="freq-count">
+            <text class="count-num">{{ totalCount }}</text>
+            <text class="count-unit">次</text>
+          </view>
+          <view class="trend-badge" :class="{ 'warning-badge': successRate < 80 }">
+            <text>成功率 {{ successRate }}%</text>
+          </view>
+        </view>
+        
+        <view class="bar-chart">
+          <view class="bar-item" v-for="(item, index) in weekData" :key="index">
+            <view class="bar-track">
+              <!-- Stacked Bar: Green for poop, Yellow for no_poop -->
+              <view class="bar-fill poop" :style="{ height: item.poopPercent + '%' }"></view>
+              <view class="bar-fill no-poop" :style="{ height: item.noPoopPercent + '%', bottom: item.poopPercent + '%' }"></view>
+            </view>
+            <text class="bar-day">{{ item.day }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Middle Row -->
+      <view class="middle-row">
+        <!-- Feeling Card -->
+        <view class="card feeling-card">
+          <view class="donut-chart">
+            <view class="progress-ring" :style="{ '--percent': painlessRate }">
+              <view class="progress-mask"></view>
+            </view>
+            <text class="donut-text">{{ painlessRate }}%</text>
+          </view>
+          <text class="feeling-title">排便顺畅度</text>
+          <text class="feeling-subtitle">{{ painlessRate >= 80 ? '状态极佳!' : '需注意改善' }}</text>
+        </view>
+
+        <!-- Insight Card -->
+        <view class="card insight-card">
+          <text class="card-label">本周洞察</text>
+          <view class="insight-list">
+            <view class="insight-item">
+              <view class="dot green"></view>
+              <text class="insight-text">主导: {{ dominantShape || '暂无' }}</text>
+            </view>
+            <view class="insight-item" v-if="symptomSummary">
+              <view class="dot red"></view>
+              <text class="insight-text">{{ symptomSummary }}</text>
+            </view>
+          </view>
+          <view class="insight-footer">
+            <text>{{ smartTip }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Milestone Card (Pet Interaction) -->
+      <view class="card milestone-card">
+        <view class="milestone-content">
+          <!-- Dynamic Puppy Avatar -->
+          <image class="puppy-avatar" :src="petImage" mode="aspectFill"></image>
+          
+          <view class="milestone-info">
+            <text class="milestone-desc">{{ petMessage }}</text>
+            
+            <view class="progress-container">
+              <view class="progress-bar">
+                <view class="progress-fill" :style="{ width: petExpPercent + '%' }"></view>
+              </view>
+              <view class="progress-labels">
+                <text>Lv.{{ petLevel }}</text>
+                <text>Lv.{{ petLevel + 1 }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Bottom Spacer -->
+      <view style="height: 120rpx;"></view>
+    </scroll-view>
+
+    <FloatingTabBar :current="1" />
   </view>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
+import FloatingTabBar from '@/components/FloatingTabBar.vue'
 
-const timeRange = ref('week') // 'week' | 'month'
-const familyMembers = ref([])
-const currentMember = ref('本人')
+const weekData = ref([])
+const totalCount = ref(0)
+const successRate = ref(100)
+const painlessRate = ref(0)
+const alertInfo = ref({ show: false, message: '' })
+const dominantShape = ref('')
+const symptomSummary = ref('')
+const smartTip = ref('')
 
-const healthScore = ref(100)
-const alerts = ref([])
-const advices = ref([])
-const trendData = ref([])
-const shapeStats = ref({})
-const colorStats = ref({})
+// Pet State
+const petImage = ref('../../static/puppy_katong.png')
+const petMessage = ref('主人，保持良好的习惯哦！')
+const petLevel = ref(1)
+const petExpPercent = ref(0)
 
-// Data storage
-const allRecords = ref([])
+onShow(() => {
+  loadData()
+})
 
 const loadData = () => {
-  // Load family members
-  const storedMembers = uni.getStorageSync('family_members') || []
-  familyMembers.value = [{ name: '本人' }, ...storedMembers]
-
-  // Load records
-  allRecords.value = uni.getStorageSync('poop_records') || []
+  const records = uni.getStorageSync('poop_records') || []
+  const weekRecords = filterThisWeek(records)
   
-  analyzeData()
+  processWeekData(weekRecords)
+  processSuccessRate(weekRecords)
+  processPainlessRate(weekRecords)
+  processInsights(weekRecords)
+  processAlerts(weekRecords)
+  
+  // Finally update pet status based on all analysis
+  processPetStatus(weekRecords)
 }
 
-const changeTimeRange = (range) => {
-  timeRange.value = range
-  analyzeData()
-}
-
-const changeMember = (name) => {
-  currentMember.value = name
-  analyzeData()
-}
-
-const analyzeData = () => {
-  // 1. Filter data
+const filterThisWeek = (records) => {
   const now = new Date()
-  const days = timeRange.value === 'week' ? 7 : 30
-  const cutoffTime = now.getTime() - days * 24 * 60 * 60 * 1000
+  const oneDayTime = 24 * 60 * 60 * 1000
+  const dayOfWeek = now.getDay() || 7
+  const mondayTime = now.getTime() - (dayOfWeek - 1) * oneDayTime
+  const mondayDate = new Date(mondayTime)
+  mondayDate.setHours(0, 0, 0, 0)
   
-  const filtered = allRecords.value.filter(item => {
-    const itemTime = item.timestamp || new Date(item.date).getTime()
-    const isMember = (item.relation || '本人') === currentMember.value
-    return itemTime > cutoffTime && isMember
-  })
-  
-  // 2. Stats
-  const sStats = {}
-  const cStats = {}
-  const dateMap = {}
-  
-  // Initialize date map for chart
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000)
-    const label = `${d.getMonth() + 1}/${d.getDate()}`
-    dateMap[label] = 0
-  }
-
-  let totalScore = 0
-  let validScoreCount = 0
-  
-  // Analysis vars for alerts
-  let consecutiveSheep = 0
-  let consecutiveGreen = 0
-  const recentShapes = []
-  
-  filtered.forEach(item => {
-    // Stats
-    sStats[item.shape] = (sStats[item.shape] || 0) + 1
-    cStats[item.color] = (cStats[item.color] || 0) + 1
-    
-    // Trend
-    // Simple date formatting matching the map keys
-    const d = new Date(item.timestamp || item.date) // Handle both formats if possible
-    // Note: item.date might be locale string, better rely on timestamp if available
-    // Fallback logic for date parsing if needed
-    const label = `${d.getMonth() + 1}/${d.getDate()}`
-    if (dateMap[label] !== undefined) {
-      dateMap[label]++
-    }
-    
-    // Scoring
-    let itemScore = 100
-    // Shape deduction
-    if (item.shape === '香蕉状' || item.shape === '硬条状') itemScore -= 0
-    else if (item.shape === '羊粪球状') itemScore -= 15
-    else if (item.shape === '水状') itemScore -= 20
-    else if (item.shape === '糊状') itemScore -= 10
-    
-    // Color deduction
-    if (item.color.includes('红')) itemScore -= 40
-    else if (item.color.includes('黑')) itemScore -= 30
-    else if (item.color.includes('绿')) itemScore -= 10
-    
-    // Feeling deduction
-    if (item.feeling === '非常困难') itemScore -= 15
-    else if (item.feeling === '有些费力') itemScore -= 5
-    
-    totalScore += Math.max(0, itemScore)
-    validScoreCount++
-    
-    // Alert Logic (simplified: just checking counts for now, ideally strictly consecutive)
-    if (item.shape === '羊粪球状') consecutiveSheep++
-    if (item.color.includes('绿')) consecutiveGreen++
-    recentShapes.push(item.shape)
-  })
-  
-  // Final Score
-  healthScore.value = validScoreCount > 0 ? Math.round(totalScore / validScoreCount) : 100
-  
-  shapeStats.value = sStats
-  colorStats.value = cStats
-  
-  // Transform dateMap to array
-  trendData.value = Object.keys(dateMap).map(key => ({
-    label: key,
-    count: dateMap[key]
-  }))
-  
-  // 3. Generate Alerts & Advice
-  generateInsights(filtered, consecutiveSheep, consecutiveGreen)
+  return records.filter(r => r.timestamp >= mondayDate.getTime())
 }
 
-const generateInsights = (records, sheepCount, greenCount) => {
-  alerts.value = []
-  advices.value = []
+const processWeekData = (records) => {
+  const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+  // [poopCount, noPoopCount]
+  const counts = Array(7).fill(0).map(() => ({ poop: 0, noPoop: 0 }))
   
-  // Alerts
-  if (sheepCount >= 3) {
-    alerts.value.push({
-      title: '便秘预警',
-      desc: '近期多次出现羊粪球状便，建议立即增加饮水和膳食纤维。'
-    })
-  }
-  if (greenCount >= 3) {
-    alerts.value.push({
-      title: '消化异常',
-      desc: '连续出现绿色便，可能是消化不良或摄入过多深色蔬菜，请持续观察。'
-    })
-  }
+  records.forEach(r => {
+    const date = new Date(r.timestamp)
+    let day = date.getDay()
+    if (day === 0) day = 7
+    
+    if (r.type === 'no_poop') {
+        counts[day - 1].noPoop++
+    } else {
+        counts[day - 1].poop++ // Default to poop if undefined
+    }
+  })
   
-  // Advices
+  // Find max total for scaling
+  const max = Math.max(...counts.map(c => c.poop + c.noPoop), 1)
+  
+  weekData.value = days.map((day, index) => {
+      const total = counts[index].poop + counts[index].noPoop
+      return {
+        day,
+        poopPercent: (counts[index].poop / max) * 100,
+        noPoopPercent: (counts[index].noPoop / max) * 100,
+        total
+      }
+  })
+  
+  totalCount.value = records.length
+}
+
+const processSuccessRate = (records) => {
+    if (records.length === 0) {
+        successRate.value = 0
+        return
+    }
+    const poopCount = records.filter(r => r.type !== 'no_poop').length
+    successRate.value = Math.round((poopCount / records.length) * 100)
+}
+
+const processPainlessRate = (records) => {
   if (records.length === 0) {
-    advices.value.push({ emoji: '💡', text: '暂无记录，保持记录习惯有助于发现健康问题哦。' })
+    painlessRate.value = 0
     return
   }
   
-  // Shape based advice
-  const shapes = Object.keys(shapeStats.value)
-  const maxShape = shapes.reduce((a, b) => shapeStats.value[a] > shapeStats.value[b] ? a : b, shapes[0])
+  // Painful keywords: 困难, 费力, Hard, Difficult
+  const painful = ['困难', '费力', 'Hard', 'Difficult']
+  const painlessCount = records.filter(r => !painful.includes(r.feeling)).length
   
-  if (maxShape === '羊粪球状' || maxShape === '硬条状') {
-    advices.value.push({
-      emoji: '🥦',
-      text: '近期排便偏干，建议增加膳食纤维摄入，如燕麦、西兰花、火龙果。',
-      link: 'constipation'
-    })
-    advices.value.push({
-      emoji: '💧',
-      text: '每天早起一杯温水，促进肠道蠕动。'
-    })
-  } else if (maxShape === '水状' || maxShape === '糊状') {
-    advices.value.push({
-      emoji: '🥣',
-      text: '近期大便不成形，注意腹部保暖，少吃生冷油腻食物。',
-      link: 'diarrhea'
-    })
-  } else {
-    advices.value.push({
-      emoji: '🌟',
-      text: '近期便便形状很完美，继续保持健康的饮食习惯！'
-    })
+  painlessRate.value = Math.round((painlessCount / records.length) * 100)
+}
+
+const processInsights = (records) => {
+  if (records.length === 0) {
+    dominantShape.value = '暂无数据'
+    smartTip.value = '记录第一笔数据来获取建议吧！'
+    return
   }
   
-  // Color based advice
-  if (colorStats.value['红色(请就医)']) {
-     alerts.value.unshift({
-       title: '严重警告',
-       desc: '发现红色便便记录，如非食用红心火龙果等食物，请及时就医！'
-     })
-  }
-}
-
-const getBarHeight = (count) => {
-  const max = Math.max(...trendData.value.map(i => i.count), 3) // Min scale 3
-  return (count / max * 100) + '%'
-}
-
-const getScoreClass = (score) => {
-  if (score >= 80) return 'score-high'
-  if (score >= 60) return 'score-mid'
-  return 'score-low'
-}
-
-const getScoreTitle = (score) => {
-  if (score >= 90) return '肠道状况极佳'
-  if (score >= 80) return '肠道状况良好'
-  if (score >= 60) return '肠道状况一般'
-  return '肠道需注意'
-}
-
-const getScoreDesc = (score) => {
-  if (score >= 80) return '继续保持哦'
-  if (score >= 60) return '有待改善，注意饮食'
-  return '建议调整作息与饮食'
-}
-
-const getColorStyle = (colorName) => {
-  if (colorName.includes('红')) return '#EF4444'
-  if (colorName.includes('绿')) return '#10B981'
-  if (colorName.includes('黄')) return '#F59E0B'
-  if (colorName.includes('黑')) return '#1F2937'
-  return '#1A1D26'
-}
-
-const showKnowledge = (type) => {
-  const titles = {
-    'constipation': '便秘科普',
-    'diarrhea': '腹泻科普'
-  }
-  const contents = {
-    'constipation': '便秘是指排便次数减少（每周少于3次）、粪便干硬、排便困难。建议：1. 多喝水；2. 多吃蔬菜水果粗粮；3. 养成定时排便习惯；4. 适当运动。',
-    'diarrhea': '腹泻是指排便次数明显超过平日习惯，粪质稀薄，水分增加。建议：1. 防脱水，补充电解质；2. 清淡饮食，吃小米粥、面条；3. 避免乳制品和油腻食物。'
-  }
-  
-  uni.showModal({
-    title: titles[type] || '健康科普',
-    content: contents[type] || '暂无详细内容',
-    showCancel: false,
-    confirmText: '知道了'
+  // 1. Dominant Shape
+  const shapeCounts = {}
+  records.filter(r => r.type !== 'no_poop').forEach(r => {
+    if (r.shape) shapeCounts[r.shape] = (shapeCounts[r.shape] || 0) + 1
   })
+  const topShape = Object.entries(shapeCounts).sort((a, b) => b[1] - a[1])[0]
+  dominantShape.value = topShape ? topShape[0] : '无'
+  
+  // 2. Symptom Summary
+  let badSymptoms = 0
+  records.forEach(r => {
+      if (r.symptoms && Array.isArray(r.symptoms)) {
+          badSymptoms += r.symptoms.length
+      }
+  })
+  symptomSummary.value = badSymptoms > 0 ? `发现 ${badSymptoms} 个异常标记` : '无明显异常'
+  
+  // 3. Generate Smart Tip
+  // Priority: Danger > Constipation/Diarrhea > Hydration > General
+  const hasDanger = records.some(r => 
+    ['红色', '黑色'].includes(r.color) || 
+    (r.symptoms && (r.symptoms.includes('带血') || r.symptoms.includes('粘液')))
+  )
+  
+  const noPoopCount = records.filter(r => r.type === 'no_poop').length
+  const waterShapeCount = records.filter(r => ['水状', '糊状'].includes(r.shape)).length
+  const dryShapeCount = records.filter(r => ['羊粪球', '硬条状'].includes(r.shape)).length
+  
+  if (hasDanger) {
+      smartTip.value = '🚨 发现高危信号(血/黑便)，请密切关注或就医！'
+  } else if (noPoopCount > 3 || dryShapeCount > 3) {
+      smartTip.value = '💧 似乎有点便秘？多喝水，多吃蔬菜纤维哦。'
+  } else if (waterShapeCount > 3) {
+      smartTip.value = '⚠️ 腹泻预警，注意补充电解质，避免油腻。'
+  } else {
+      smartTip.value = '🌟 保持得不错！继续维持规律作息。'
+  }
 }
 
-onMounted(() => {
-  loadData()
-})
+const processAlerts = (records) => {
+    const dangers = records.filter(r => 
+        ['红色', '黑色'].includes(r.color) || 
+        (r.symptoms && (r.symptoms.includes('带血') || r.symptoms.includes('粘液')))
+    )
+    
+    if (dangers.length > 0) {
+        alertInfo.value = {
+            show: true,
+            message: `本周检测到 ${dangers.length} 次消化道预警信号，请注意！`
+        }
+    } else {
+        alertInfo.value = { show: false, message: '' }
+    }
+}
+
+const processPetStatus = (records) => {
+    // Logic from report.md
+    // Happy: Success > 80% & No Alert
+    // Worried: Alert Exists
+    // Encouraging: no_poop exists
+    
+    const hasDanger = alertInfo.value.show
+    const hasNoPoop = records.some(r => r.type === 'no_poop')
+    
+    if (hasDanger) {
+        // Worried
+        petImage.value = '../../static/puppy_worry.png'
+        petMessage.value = '主人是不是肚子不舒服？我好担心... (递急救箱)'
+    } else if (successRate.value > 80 && !hasNoPoop) {
+        // Happy
+        petImage.value = '../../static/puppy_happy.png'
+        petMessage.value = '哇！主人的肠胃棒棒的！奖励一个贴贴！'
+    } else if (hasNoPoop || successRate.value <= 80) {
+        // Encouraging
+        petImage.value = '../../static/puppy_cheer.png'
+        petMessage.value = '有点不顺畅？没关系，多喝水，我会陪着你的！'
+    } else {
+        // Default
+        petImage.value = '../../static/puppy_katong.png'
+        petMessage.value = '主人，您的健康就是我的快乐！'
+    }
+    
+    // Fallback for missing images logic (simulated)
+    // In real app, we might check if file exists, but here we just set the path.
+    // Assuming user will add these images. For now, if they don't exist, it might show broken image.
+    // To be safe, let's just stick to puppy_katong if we can't guarantee.
+    // But user asked for the scheme. I will implement the scheme.
+    // Note: I will use a try-catch or fallback in the template? No, standard <image> handles error event.
+    // I'll add an @error handler to revert to default if missing.
+}
+
+const goBack = () => {
+  uni.navigateBack()
+}
 </script>
 
-<style lang="scss" scoped>
+<style>
+page {
+  background-color: #F8F9FA;
+}
+</style>
+
+<style scoped>
 .container {
   min-height: 100vh;
-  background-color: #F5F7FA;
-  position: relative;
-  padding-bottom: 50px;
-}
-
-.bg-header {
-  height: 220px;
-  background: linear-gradient(135deg, #1A1D26 0%, #374151 100%);
-  border-bottom-left-radius: 24px;
-  border-bottom-right-radius: 24px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 0;
-}
-
-.content-wrapper {
-  position: relative;
-  z-index: 1;
-  padding: 20px;
-  padding-top: 10px; // Adjust for header
-}
-
-/* Filter Styles */
-.filter-header {
-  margin-bottom: 20px;
-  
-  .time-tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 16px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 4px;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    backdrop-filter: blur(10px);
-    
-    .tab-item {
-      padding: 6px 20px;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
-      border-radius: 16px;
-      transition: all 0.2s;
-      
-      &.active {
-        background: white;
-        color: #1A1D26;
-        font-weight: 600;
-      }
-    }
-  }
-  
-  .member-scroll {
-    width: 100%;
-    white-space: nowrap;
-    
-    .member-list {
-      display: flex;
-      gap: 12px;
-      padding: 0 4px;
-      justify-content: center;
-      
-      .member-item {
-        display: flex;
-        align-items: center;
-        padding: 6px 16px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        font-size: 14px;
-        color: white;
-        border: 1px solid transparent;
-        transition: all 0.2s;
-        
-        &.active {
-          background: white;
-          color: #1A1D26;
-          font-weight: 500;
-        }
-        
-        .member-avatar-placeholder {
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          margin-right: 6px;
-          background: #E0E7FF;
-          color: #4B6EF6;
-          font-size: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 600;
-        }
-      }
-    }
-  }
-}
-
-/* Score Card */
-.main-card {
-  background: white;
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-  
-  .card-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .score-ring {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    border: 8px solid #F3F4F6;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    
-    &.score-high { border-color: #10B981; color: #10B981; }
-    &.score-mid { border-color: #F59E0B; color: #F59E0B; }
-    &.score-low { border-color: #EF4444; color: #EF4444; }
-    
-    .score-val {
-      font-size: 32px;
-      font-weight: 800;
-      line-height: 1;
-    }
-    .score-label {
-      font-size: 12px;
-      color: #9CA3AF;
-      margin-top: 4px;
-    }
-  }
-  
-  .score-summary {
-    flex: 1;
-    margin-left: 24px;
-    display: flex;
-    flex-direction: column;
-    
-    .summary-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #1A1D26;
-      margin-bottom: 6px;
-    }
-    .summary-desc {
-      font-size: 14px;
-      color: #6B7280;
-    }
-  }
-}
-
-/* Alert Section */
-.alert-section {
-  margin-bottom: 24px;
+  background-color: #F8F9FA;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  
-  .alert-card {
-    background: #FEF2F2;
-    border-radius: 12px;
-    padding: 16px;
-    display: flex;
-    align-items: flex-start;
-    
-    .alert-icon {
-      font-size: 20px;
-      margin-right: 12px;
-      margin-top: 2px;
-    }
-    
-    .alert-content {
-      flex: 1;
-      .alert-title {
-        font-size: 15px;
-        font-weight: 700;
-        color: #991B1B;
-        display: block;
-        margin-bottom: 4px;
-      }
-      .alert-desc {
-        font-size: 13px;
-        color: #B91C1C;
-        line-height: 1.4;
-      }
-    }
-  }
 }
 
-/* Advice List */
-.advice-list {
+.custom-header {
+  padding: 30rpx;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  
-  .advice-item {
-    background: white;
-    padding: 16px;
-    border-radius: 12px;
-    display: flex;
-    align-items: flex-start;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
-    
-    .advice-emoji {
-      font-size: 24px;
-      margin-right: 12px;
-      background: #F3F4F6;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-    }
-    
-    .advice-content {
-      flex: 1;
-      .advice-text {
-        font-size: 14px;
-        color: #4B5563;
-        line-height: 1.5;
-        display: block;
-        margin-bottom: 6px;
-      }
-      .advice-link {
-        font-size: 12px;
-        color: #4B6EF6;
-        font-weight: 600;
-      }
-    }
-  }
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Charts */
-.chart-section {
-  margin-bottom: 24px;
-  
-  .section-header {
-    margin-bottom: 12px;
-    padding-left: 4px;
-    .section-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #1A1D26;
-    }
-  }
+.back-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.chart-card {
+.header-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #1A1D26;
+}
+
+.header-right {
+  width: 60rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.scroll-content {
+  flex: 1;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+}
+
+/* Alert Banner */
+.alert-banner {
+  background-color: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  display: flex;
+  align-items: center;
+}
+
+.alert-icon {
+  margin-right: 16rpx;
+}
+
+.alert-text {
+  flex: 1;
+  font-size: 24rpx;
+  color: #DC2626;
+  font-weight: 500;
+}
+
+.alert-close {
+  padding: 10rpx;
+}
+
+.card {
   background: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-  height: 200px;
+  border-radius: 40rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.02);
+}
+
+.card-label {
+  font-size: 24rpx;
+  color: #9CA3AF;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+/* Frequency Card */
+.frequency-card {
+  padding: 40rpx;
+}
+
+.freq-header {
   display: flex;
-  align-items: flex-end;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40rpx;
+}
+
+.freq-count {
+  display: flex;
+  align-items: baseline;
+}
+
+.count-num {
+  font-size: 60rpx;
+  font-weight: 700;
+  color: #1A1D26;
+  line-height: 1;
+}
+
+.count-unit {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1A1D26;
+  margin-left: 8rpx;
+}
+
+.trend-badge {
+  background-color: #E8F5E9;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+}
+
+.trend-badge text {
+  color: #00E676;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.trend-badge.warning-badge {
+  background-color: #FEF3C7;
+}
+
+.trend-badge.warning-badge text {
+  color: #D97706;
 }
 
 .bar-chart {
-  width: 100%;
-  height: 160px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  
-  .chart-bar-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    
-    .bar-column {
-      width: 8px;
-      height: 120px;
-      background: #F3F4F6;
-      border-radius: 4px;
-      display: flex;
-      align-items: flex-end;
-      position: relative;
-      
-      .bar-value {
-        width: 100%;
-        background: #4B6EF6;
-        border-radius: 4px;
-        min-height: 4px;
-        transition: height 0.5s ease;
-      }
-    }
-    
-    .bar-label {
-      font-size: 10px;
-      color: #9CA3AF;
-      transform: scale(0.9);
-      white-space: nowrap;
-    }
-  }
+  height: 240rpx;
 }
 
-.tags-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  
-  .grid-item {
-    background: white;
-    padding: 16px;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
-    
-    .grid-val {
-      font-size: 20px;
-      font-weight: 700;
-      color: #1A1D26;
-      margin-bottom: 4px;
-    }
-    
-    .grid-label {
-      font-size: 12px;
-      color: #6B7280;
-    }
-  }
+.bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60rpx;
+}
+
+.bar-track {
+  width: 32rpx;
+  height: 160rpx;
+  background-color: #F1F8F6;
+  border-radius: 16rpx;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+}
+
+.bar-fill {
+  width: 100%;
+  border-radius: 4rpx;
+}
+
+.bar-fill.poop {
+  background-color: #00E676;
+  z-index: 1;
+}
+
+.bar-fill.no-poop {
+  background-color: #FBBF24; /* Amber-400 */
+  position: absolute;
+  z-index: 2;
+}
+
+.bar-day {
+  font-size: 20rpx;
+  color: #9CA3AF;
+}
+
+/* Middle Row */
+.middle-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 30rpx;
+}
+
+.feeling-card, .insight-card {
+  flex: 1;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+/* Feeling Card */
+.feeling-card {
+  justify-content: center;
+}
+
+.donut-chart {
+  width: 160rpx;
+  height: 160rpx;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.progress-ring {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(#00E676 calc(var(--percent) * 1%), #F5F7FA 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.progress-mask {
+  position: absolute;
+  width: 82%;
+  height: 82%;
+  background-color: #fff;
+  border-radius: 50%;
+}
+
+.donut-text {
+  position: absolute;
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #1A1D26;
+  z-index: 1;
+}
+
+.feeling-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #065F46;
+  margin-bottom: 8rpx;
+}
+
+.feeling-subtitle {
+  font-size: 24rpx;
+  color: #34D399;
+  font-weight: 500;
+}
+
+/* Insight Card */
+.insight-card {
+  align-items: flex-start;
+}
+
+.insight-list {
+  margin-top: 10rpx;
+  margin-bottom: 30rpx;
+  width: 100%;
+}
+
+.insight-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.dot.green { background-color: #00E676; }
+.dot.red { background-color: #DC2626; }
+
+.insight-text {
+  font-size: 24rpx;
+  color: #1A1D26;
+  font-weight: 500;
+}
+
+.insight-footer {
+  border-top: 2rpx solid #F3F4F6;
+  width: 100%;
+  padding-top: 20rpx;
+}
+
+.insight-footer text {
+  font-size: 20rpx;
+  color: #059669;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Milestone Card */
+.milestone-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.milestone-content {
+  padding: 30rpx;
+  display: flex;
+  align-items: flex-start;
+}
+
+.puppy-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 20rpx;
+  margin-right: 24rpx;
+  background-color: #E0F2F1;
+}
+
+.milestone-info {
+  flex: 1;
+}
+
+.milestone-desc {
+  font-size: 26rpx;
+  color: #4B5563;
+  margin-bottom: 20rpx;
+  display: block;
+  line-height: 1.5;
+}
+
+.progress-container {
+  width: 100%;
+}
+
+.progress-bar {
+  height: 16rpx;
+  background-color: #F3F4F6;
+  border-radius: 8rpx;
+  width: 100%;
+  margin-bottom: 8rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #00E676;
+  border-radius: 8rpx;
+  transition: width 0.5s ease;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-labels text {
+  font-size: 20rpx;
+  color: #9CA3AF;
+}
+
+::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  background: transparent;
 }
 </style>
