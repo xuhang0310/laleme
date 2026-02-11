@@ -44,15 +44,17 @@ const petImageSrc = computed(() => {
 })
 
 // 监听状态变化，触发特殊动画
-watch(() => props.status, (newVal) => {
-  if (newVal === 'eating') {
-    isInteracting.value = true
-    // 进食动画持续时间
-    setTimeout(() => {
-      // 父组件负责切回 normal
-    }, 2000)
-  }
-})
+  watch(() => props.status, (newVal) => {
+    if (newVal === 'eating') {
+      isInteracting.value = true
+      // 进食动画持续时间
+      // setTimeout(() => {
+      //   // 父组件负责切回 normal
+      // }, 2000)
+    } else {
+        isInteracting.value = false
+    }
+  })
 
 const handleTouchStart = () => {
   isPressed.value = true

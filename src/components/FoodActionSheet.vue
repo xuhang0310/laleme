@@ -10,17 +10,17 @@
       <view class="yield-section">
         <view class="yield-box">
           <text class="plus">+</text>
-          <text class="num">{{ state.daily.food }}</text>
+          <text class="num">{{ userStore.pendingFood }}</text>
           <text class="unit">g</text>
         </view>
-        <text class="yield-desc">今日记录{{ state.daily.dailyRecordCount }}次，待领取收益</text>
+        <text class="yield-desc">今日记录{{ userStore.dailyRecordCount }}次，待领取收益</text>
       </view>
 
       <!-- 仓库进度条 -->
       <view class="storage-section">
         <view class="storage-label">
           <text>粮仓余额</text>
-          <text class="storage-val">{{ state.wallet }}<text class="storage-max">/{{ state.maxWallet }}g</text></text>
+          <text class="storage-val">{{ userStore.food }}<text class="storage-max">/{{ maxWallet }}g</text></text>
         </view>
         <view class="progress-bg">
           <view class="progress-bar" :style="{ width: progressPercent + '%' }"></view>
@@ -31,7 +31,7 @@
       <!-- 操作按钮 -->
       <button 
         class="btn-claim" 
-        :class="{ 'disabled': state.daily.food <= 0 || isFull }"
+        :class="{ 'disabled': userStore.pendingFood <= 0 || isFull }"
         @click="handleClaim"
       >
         {{ btnText }}
@@ -46,8 +46,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useFoodSystem } from '@/composables/useFoodSystem'
+import { computed, watch } from 'vue'
+import { useUserStore } from '@/stores/user'
 
 const props = defineProps({
   visible: {
@@ -58,27 +58,27 @@ const props = defineProps({
 
 const emit = defineEmits(['update:visible', 'claim-success'])
 
-const { state, claimFood, debugReset, reload } = useFoodSystem()
+const userStore = useUserStore()
+const maxWallet = 300
 
 const progressPercent = computed(() => {
-  return Math.min((state.value.wallet / state.value.maxWallet) * 100, 100)
+  return Math.min((userStore.food / maxWallet) * 100, 100)
 })
 
 const isFull = computed(() => {
-  return state.value.wallet >= state.value.maxWallet
+  return userStore.food >= maxWallet
 })
 
 const btnText = computed(() => {
-  if (state.value.daily.food <= 0) return '今日已领完'
+  if (userStore.pendingFood <= 0) return '今日已领完'
   if (isFull.value) return '粮仓已满'
   return '全部领取'
 })
 
-// 监听 visible 变化，每次打开时刷新数据
-import { watch } from 'vue'
+// 监听 visible 变化，每次打开时检查日期
 watch(() => props.visible, (val) => {
   if (val) {
-    reload()
+    userStore.checkDailyReset()
   }
 })
 
@@ -88,7 +88,7 @@ const close = () => {
 }
 
 const handleClaim = () => {
-  const res = claimFood()
+  const res = userStore.claimFood()
   if (res.success) {
     uni.showToast({
       title: res.msg,
@@ -109,7 +109,7 @@ const handleClaim = () => {
 }
 
 const handleReset = () => {
-  debugReset()
+  userStore.debugReset()
   uni.showToast({ title: '已重置', icon: 'none' })
 }
 </script>

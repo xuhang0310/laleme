@@ -13,6 +13,24 @@
       </view>
     </view>
 
+    <!-- 状态指示器 (新增) -->
+    <view class="status-panel" :style="{ top: (statusBarHeight + 50) + 'px' }">
+      <view class="status-row">
+        <text class="status-emoji">🍖</text>
+        <view class="progress-track">
+          <view class="progress-fill hunger" :style="{ width: petStore.hunger + '%' }"></view>
+        </view>
+      </view>
+      <view class="status-row">
+        <text class="status-emoji">❤️</text>
+        <view class="progress-track">
+          <!-- 假设每级100经验 -->
+          <view class="progress-fill love" :style="{ width: (petStore.exp % 100) + '%' }"></view>
+        </view>
+        <text class="level-tag">Lv.{{ petStore.level }}</text>
+      </view>
+    </view>
+
     <!-- 顶部功能区 (模拟蚂蚁庄园右上角) - 暂时隐藏 -->
     <!-- <view class="top-actions">
       <view class="action-bubble" @click="handleMore">
@@ -34,7 +52,7 @@
       </view>
 
       <!-- 小狗组件 (卡通形象) -->
-      <PetCartoon :status="petStatus" @interact="handlePetTouch" />
+      <PetCartoon :status="petStore.status" @interact="handlePetTouch" />
     </view>
 
     <!-- 领狗粮弹窗 -->
@@ -59,7 +77,6 @@
       <!-- 中间：喂食 (大按钮) -->
       <view class="tool-item" @click="handleFeed">
          <image src="/static/chifan.png" class="tool-icon large" mode="aspectFit" />
-        <text class="tool-label stroke-text">喂食</text>
       </view>
 
       <!-- 右侧：聊天 -->
@@ -73,11 +90,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import PetCartoon from '@/components/PetCartoon.vue'
 import FoodActionSheet from '@/components/FoodActionSheet.vue'
-import { useFoodSystem } from '@/composables/useFoodSystem'
+import { usePetStore } from '@/stores/pet'
+import { useUserStore } from '@/stores/user'
 
-const { feedPet } = useFoodSystem()
+const petStore = usePetStore()
+const userStore = useUserStore()
 
 // 状态栏高度适配
 const statusBarHeight = ref(20)
@@ -85,9 +105,13 @@ const statusBarHeight = ref(20)
 // 状态
 const showBubble = ref(true)
 const showFoodSheet = ref(false)
-const petStatus = ref('normal') // normal, eating, sad
 const isFlying = ref(false) // 投喂动画开关
 const currentMessage = ref('主人，你终于来看我啦！')
+
+onShow(() => {
+  petStore.checkHunger()
+  userStore.checkDailyReset()
+})
 
 onMounted(() => {
   // 获取系统信息用于导航栏适配
@@ -150,13 +174,13 @@ const handleClaimSuccess = (amount) => {
 }
 
 const handleFeed = () => {
-  if (petStatus.value === 'eating') return // 防止连点
+  if (petStore.status === 'eating') return // 防止连点
 
-  const result = feedPet()
+  const result = petStore.feed()
   
   if (!result.success) {
     if (result.code === 'INSUFFICIENT_FUNDS') {
-      petStatus.value = 'sad' // 切换到伤心/饥饿图
+      petStore.setStatus('sad') // 切换到伤心/饥饿图
       currentMessage.value = '肚子好饿，可是没有粮了...'
       showBubble.value = true
       
@@ -169,7 +193,7 @@ const handleFeed = () => {
             handleGetFood()
           }
           // 延迟恢复正常
-          setTimeout(() => { petStatus.value = 'normal' }, 2000)
+          setTimeout(() => { petStore.updateStatus() }, 2000)
         }
       })
     } else if (result.code === 'FULL') {
@@ -192,7 +216,7 @@ const handleFeed = () => {
   // 3. 动画结束后切换小狗状态
   setTimeout(() => {
     isFlying.value = false
-    petStatus.value = 'eating'
+    petStore.setStatus('eating')
     currentMessage.value = '好香好香！最爱主人了！'
     showBubble.value = true
     
@@ -207,7 +231,7 @@ const handleFeed = () => {
     
     // 恢复正常
     setTimeout(() => {
-      petStatus.value = 'normal'
+      petStore.updateStatus()
     }, 2000)
   }, 600) // 飞行时间 0.6s
 }
@@ -436,8 +460,8 @@ const handleMore = () => {
   position: relative;
   
   .tool-icon {
-    width: 120rpx;
-    height: 120rpx;
+    width: 150rpx;
+    height: 150rpx;
     margin-bottom: -10rpx;
     filter: drop-shadow(0 4rpx 8rpx rgba(0,0,0,0.2));
     transition: transform 0.1s;
@@ -447,8 +471,8 @@ const handleMore = () => {
     }
 
     &.large {
-      width: 140rpx;
-      height: 140rpx;
+      width: 190rpx;
+      height: 190rpx;
     }
   }
   
@@ -466,5 +490,47 @@ const handleMore = () => {
        3rpx  3rpx 0 #4E342E,
        0 4rpx 8rpx rgba(0,0,0,0.5);
   }
+}
+
+.status-panel {
+  position: absolute;
+  left: 30rpx;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.status-row {
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,0.3);
+  padding: 8rpx 16rpx;
+  border-radius: 30rpx;
+  backdrop-filter: blur(4px);
+}
+.status-emoji {
+  font-size: 28rpx;
+  margin-right: 10rpx;
+}
+.progress-track {
+  width: 160rpx;
+  height: 12rpx;
+  background: rgba(255,255,255,0.3);
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 6rpx;
+  transition: width 0.5s ease;
+  
+  &.hunger { background: #FF9800; }
+  &.love { background: #E91E63; }
+}
+.level-tag {
+  font-size: 20rpx;
+  color: #fff;
+  font-weight: bold;
+  margin-left: 10rpx;
 }
 </style>

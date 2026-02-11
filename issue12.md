@@ -20,11 +20,12 @@
     *   *方案建议*: 可以考虑以“进度条”或“心形/骨头图标”的形式，集成在顶部或小狗脚下，点击才显示具体数值。
 
 ### 2.2 待办事项 (TODO)
-1.  **完善状态衰减机制**: 实现后台或定时器逻辑，让饱食度随时间自然下降 (如每小时 -2点)，否则用户永远无法再次喂食。
-2.  **UI 优化**: 
+1.  **技术栈升级**: 引入 Pinia 进行状态管理 (见第4节)。
+2.  **完善状态衰减机制**: 实现后台或定时器逻辑，让饱食度随时间自然下降 (如每小时 -2点)，否则用户永远无法再次喂食。
+3.  **UI 优化**: 
     *   在界面上增加饱食度/亲密度的可视化指示。
     *   优化底部图标，去除背景圈，放大图标 (已部分完成，需确认效果)。
-3.  **记录与产出联动**: 确保 `poop/add.vue` 的记录真实增加 `pendingFood`，并且每日产出逻辑准确 (递减奖励)。
+4.  **记录与产出联动**: 确保 `poop/add.vue` 的记录真实增加 `pendingFood`，并且每日产出逻辑准确 (递减奖励)。
 
 ## 3. 狗粮消耗功能实现思路 (Consumption Implementation Strategy)
 
@@ -65,9 +66,33 @@
     *   **实现思路**: 在点击“聊天”按钮进入聊天模式时，或发送每一条消息时，检查余额并扣除。
     *   **提示**: 余额不足时提示“小狗累了，吃饱了才有力气聊天哦”。
 
-### 3.3 总结与优先级
-1.  **P0**: 必须优先实现 **3.1 被动衰减**。如果饱食度不下降，用户喂一次就永远不用再喂，整个经济系统就停滞了。
-2.  **P1**: 聊天消耗可以稍后实现，先保证核心的“记录 -> 产出 -> 喂食 -> 衰减”闭环跑通。
+## 4. Pinia 升级计划 (Upgrade Plan)
 
-## 4. 结论与行动
+经确认，Pinia 完全兼容 uniapp 及微信小程序环境。为支撑日益复杂的“状态自动机”和“全局数据联动”，建议按以下步骤进行迁移：
+
+### 4.1 为什么要升级？
+*   **DevTools 支持**: 可以实时观察状态变化，调试更方便。
+*   **模块化**: `useFoodSystem` 目前承担了太多职责（数据、UI逻辑、业务逻辑），拆分为 `UserStore` (资产) 和 `PetStore` (宠物状态) 更清晰。
+*   **持久化插件**: `pinia-plugin-persistedstate` 可以自动处理 `uni.setStorage`，减少手动 watch 代码。
+
+### 4.2 迁移步骤
+1.  **安装依赖**:
+    ```bash
+    npm install pinia pinia-plugin-persistedstate-uni
+    ```
+2.  **配置主入口**:
+    在 `main.js` 中注册 Pinia 实例。
+3.  **重构 Store**:
+    *   创建 `src/stores/user.js`: 管理 `food`, `pendingFood`, `dailyRecordCount`。
+    *   创建 `src/stores/pet.js`: 管理 `hunger`, `exp`, `level`, `status`。
+4.  **替换调用**:
+    *   修改 `FoodActionSheet.vue` 和 `index.vue`，从 `useFoodSystem` 切换为 `useUserStore()` 和 `usePetStore()`。
+5.  **清理遗留**:
+    *   删除 `useFoodSystem.js`。
+
+### 4.3 兼容性备注
+*   uniapp 的 Vue 3 版本已内置对 Pinia 的支持。
+*   微信小程序端需注意 `pinia-plugin-persistedstate` 需使用适配 uniapp 的版本 (如 `pinia-plugin-persistedstate-uni` 或手动配置 storage)。
+
+## 5. 结论与行动
 请在下方补充讨论意见，确定是否执行 2.1 中的 UI 变更。
