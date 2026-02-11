@@ -172,6 +172,10 @@ const handleFeed = () => {
           setTimeout(() => { petStatus.value = 'normal' }, 2000)
         }
       })
+    } else if (result.code === 'FULL') {
+       currentMessage.value = '嗝~ 已经吃不下了汪！'
+       showBubble.value = true
+       uni.showToast({ title: result.msg, icon: 'none' })
     } else {
       uni.showToast({ title: result.msg, icon: 'none' })
     }

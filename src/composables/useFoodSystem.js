@@ -118,10 +118,19 @@ export function useFoodSystem() {
   const feedPet = () => {
     reload() // 确保余额最新
     
-    const COST = 20
-    const HUNGER_GAIN = 20
-    const EXP_GAIN_OVERFLOW = 5
+    const COST = 10
+    const HUNGER_GAIN = 10
+    // const EXP_GAIN_OVERFLOW = 5
     
+    // 0. 检查饱食度
+    if (state.pet.hunger >= 100) {
+      return {
+        success: false,
+        code: 'FULL',
+        msg: '小狗已经很饱了，不用再喂啦！'
+      }
+    }
+
     // 1. 检查余额
     if (state.food < COST) {
       return { 
@@ -146,22 +155,13 @@ export function useFoodSystem() {
       state.pet.hunger += HUNGER_GAIN
       actualHungerGain = HUNGER_GAIN
     } else {
-      // 溢出处理
+      // 填满
       state.pet.hunger = 100
       actualHungerGain = space
-      // 溢出部分转化为经验 (只要满了就给经验，或者只有完全溢出才给？)
-      // 根据 PLAN: 当饱食度 = 100 时，继续喂食触发宠溺
-      // 这里简化逻辑：只要达到或维持 100，就给额外奖励
-      expGain = EXP_GAIN_OVERFLOW
-      state.pet.exp += expGain
     }
     
-    // 升级逻辑 (简化：每100经验升一级)
-    if (state.pet.exp >= 100) {
-      state.pet.level += 1
-      state.pet.exp -= 100
-      // 可以返回 levelUp: true
-    }
+    // 升级逻辑 (暂时移除溢出转化经验的逻辑，仅保留正常升级逻辑如果未来有)
+    // if (state.pet.exp >= 100) { ... }
     
     return {
       success: true,
