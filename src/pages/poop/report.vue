@@ -11,7 +11,7 @@
       </view>
     </view>
 
-    <scroll-view scroll-y class="scroll-content" :show-scrollbar="false">
+    <scroll-view scroll-y class="scroll-content" :show-scrollbar="false" @scrolltolower="loadMore">
       
       <!-- Alert Banner (New) -->
       <view class="alert-banner" v-if="alertInfo.show">
@@ -104,6 +104,61 @@
         </view>
       </view>
 
+      <!-- Record List Section -->
+      <view class="record-section">
+        <text class="section-title">近期记录</text>
+        
+        <view class="record-list">
+          <view class="record-card" v-for="(item, index) in displayRecords" :key="index">
+            <!-- Left: Visual Indicator -->
+            <view class="visual-box" :style="{ backgroundColor: getBgColor(item) }">
+               <text class="visual-emoji">{{ getVisualEmoji(item) }}</text>
+            </view>
+            
+            <!-- Center: Info -->
+            <view class="record-info">
+              <view class="info-top">
+                <text class="record-time">{{ formatTime(item.timestamp) }}</text>
+                <text class="record-type" :class="{ 'bad': item.type === 'no_poop' }">
+                  {{ item.type === 'poop' ? item.shape : '未排便' }}
+                </text>
+              </view>
+              
+              <view class="info-tags">
+                <view class="mini-tag" v-for="(tag, tIdx) in item.symptoms" :key="tIdx">
+                  {{ tag }}
+                </view>
+                <view class="mini-tag default" v-if="(!item.symptoms || item.symptoms.length === 0) && item.type === 'poop'">
+                  状态良好
+                </view>
+              </view>
+            </view>
+            
+            <!-- Right: Stats -->
+            <view class="record-stats">
+              <view class="stat-row">
+                <text class="stat-emoji">{{ getFeelingEmoji(item.feeling) }}</text>
+                <text class="stat-text">{{ item.duration }}</text>
+              </view>
+              <view class="stat-row" v-if="item.type === 'poop'">
+                 <text class="stat-text sub">量:{{ item.amount }}</text>
+              </view>
+            </view>
+          </view>
+          
+          <!-- Loading State -->
+          <view class="loading-state" v-if="hasMore">
+            <text>上拉加载更多</text>
+          </view>
+          <view class="loading-state" v-else-if="displayRecords.length > 0">
+            <text>没有更多记录了</text>
+          </view>
+           <view class="empty-state" v-else>
+            <text>暂无记录，快去添加吧！</text>
+          </view>
+        </view>
+      </view>
+
       <!-- Bottom Spacer -->
       <view style="height: 120rpx;"></view>
     </scroll-view>
@@ -132,12 +187,23 @@ const petMessage = ref('主人，保持良好的习惯哦！')
 const petLevel = ref(1)
 const petExpPercent = ref(0)
 
+// List State
+const allRecords = ref([])
+const displayRecords = ref([])
+const pageSize = ref(5)
+const hasMore = ref(true)
+
 onShow(() => {
   loadData()
 })
 
 const loadData = () => {
   const records = uni.getStorageSync('poop_records') || []
+  
+  // 1. Process List Data
+  allRecords.value = records.sort((a, b) => b.timestamp - a.timestamp)
+  updateDisplayList()
+
   const weekRecords = filterThisWeek(records)
   
   processWeekData(weekRecords)
@@ -148,6 +214,72 @@ const loadData = () => {
   
   // Finally update pet status based on all analysis
   processPetStatus(weekRecords)
+}
+
+const updateDisplayList = () => {
+  const currentLen = displayRecords.value.length
+  const targetLen = pageSize.value
+  
+  if (targetLen >= allRecords.value.length) {
+    displayRecords.value = allRecords.value
+    hasMore.value = false
+  } else {
+    displayRecords.value = allRecords.value.slice(0, targetLen)
+    hasMore.value = true
+  }
+}
+
+const loadMore = () => {
+  if (!hasMore.value) return
+  pageSize.value += 5
+  updateDisplayList()
+}
+
+// Helpers for List UI
+const formatTime = (ts) => {
+  const date = new Date(ts)
+  const m = (date.getMonth() + 1).toString().padStart(2, '0')
+  const d = date.getDate().toString().padStart(2, '0')
+  const h = date.getHours().toString().padStart(2, '0')
+  const min = date.getMinutes().toString().padStart(2, '0')
+  return `${m}-${d} ${h}:${min}`
+}
+
+const getBgColor = (item) => {
+  if (item.type === 'no_poop') return '#F3F4F6' // Gray
+  // Use the stored color name to map to hex
+  const colorMap = {
+    '棕色': '#D7CCC8', // Light Brown
+    '黄色': '#FFF9C4', // Light Yellow
+    '绿色': '#C8E6C9', // Light Green
+    '黑色': '#CFD8DC', // Light Gray-Blue
+    '红色': '#FFCDD2'  // Light Red
+  }
+  // Extract color name (remove brackets if any)
+  const key = item.color ? item.color.split('(')[0] : ''
+  return colorMap[key] || '#E0E0E0'
+}
+
+const getVisualEmoji = (item) => {
+  if (item.type === 'no_poop') return '😣'
+  // Map shape to emoji or short text
+  if (item.shape.includes('香蕉')) return '🍌'
+  if (item.shape.includes('羊粪')) return '🪨'
+  if (item.shape.includes('糊')) return '🍦'
+  if (item.shape.includes('水')) return '💧'
+  if (item.shape.includes('硬')) return '🥖'
+  return '💩'
+}
+
+const getFeelingEmoji = (feelingTitle) => {
+  const map = {
+    '迅速': '⚡️',
+    '顺畅': '😌',
+    '费力': '😓',
+    '困难': '😖',
+    '自定义': '⏱'
+  }
+  return map[feelingTitle] || '😐'
 }
 
 const filterThisWeek = (records) => {
@@ -693,5 +825,161 @@ page {
   height: 0 !important;
   -webkit-appearance: none;
   background: transparent;
+}
+
+/* Record List Section */
+.record-section {
+  margin-top: 40rpx;
+  padding: 0 10rpx; /* Slight padding alignment */
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1A1D26;
+  margin-bottom: 24rpx;
+  display: block;
+  padding-left: 10rpx;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.record-card {
+  background: white;
+  border-radius: 32rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
+  transition: transform 0.1s;
+}
+
+.record-card:active {
+  transform: scale(0.98);
+}
+
+.visual-box {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.visual-emoji {
+  font-size: 44rpx;
+}
+
+.record-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 20rpx;
+}
+
+.info-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.record-time {
+  font-size: 26rpx;
+  color: #9CA3AF;
+  font-weight: 500;
+  margin-right: 16rpx;
+}
+
+.record-type {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #1A1D26;
+}
+
+.record-type.bad {
+  color: #9CA3AF;
+}
+
+.info-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.mini-tag {
+  background: #FEF2F2;
+  color: #EF4444;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+}
+
+.mini-tag.default {
+  background: #F0FDF4;
+  color: #22C55E;
+}
+
+.record-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.stat-row:last-child {
+  margin-bottom: 0;
+}
+
+.stat-emoji {
+  font-size: 24rpx;
+  margin-right: 6rpx;
+}
+
+.stat-text {
+  font-size: 24rpx;
+  color: #4B5563;
+  font-weight: 600;
+}
+
+.stat-text.sub {
+  color: #9CA3AF;
+  font-weight: 400;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 30rpx 0;
+}
+
+.loading-state text {
+  font-size: 24rpx;
+  color: #9CA3AF;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60rpx 0;
+  background: white;
+  border-radius: 32rpx;
+}
+
+.empty-state text {
+  font-size: 28rpx;
+  color: #9CA3AF;
 }
 </style>
