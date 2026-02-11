@@ -231,7 +231,7 @@ const handleFeed = () => {
     
     // 恢复正常
     setTimeout(() => {
-      petStore.updateStatus()
+      petStore.updateStatus(true)
     }, 2000)
   }, 600) // 飞行时间 0.6s
 }

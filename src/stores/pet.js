@@ -13,6 +13,12 @@ export const usePetStore = defineStore('pet', {
     // 检查饱食度衰减 (Passive Decay)
     checkHunger() {
       const now = Date.now()
+      
+      // 自动修复卡在 eating 状态的问题 (如果超过10秒还在吃，强制重置)
+      if (this.status === 'eating' && (now - this.lastHungerUpdateTime > 10000)) {
+         this.updateStatus(true)
+      }
+
       if (!this.lastHungerUpdateTime) {
         this.lastHungerUpdateTime = now
         return
@@ -30,8 +36,8 @@ export const usePetStore = defineStore('pet', {
     },
 
     // 更新状态 (根据饱食度)
-    updateStatus() {
-      if (this.status === 'eating') return // 进食中不打断
+    updateStatus(force = false) {
+      if (!force && this.status === 'eating') return // 进食中不打断
       
       if (this.hunger < 30) {
         this.status = 'sad'

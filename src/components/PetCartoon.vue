@@ -11,7 +11,7 @@
       :class="{ 
         'breathing': !isInteracting && status !== 'eating', 
         'squeezed': isPressed,
-        'eating-anim': status === 'eating'
+        'eating-anim': status === 'eating' && !isPressed
       }"
       :src="petImageSrc" 
       mode="aspectFit"
@@ -118,14 +118,14 @@ const emit = defineEmits(['interact'])
 /* 进食动画：快速咀嚼/弹跳 */
 @keyframes eating {
   0% { transform: scale(1) rotate(0deg); }
-  25% { transform: scale(1.05) rotate(-2deg); }
+  25% { transform: scale(1.05) rotate(-5deg); }
   50% { transform: scale(1) rotate(0deg); }
-  75% { transform: scale(1.05) rotate(2deg); }
+  75% { transform: scale(1.05) rotate(5deg); }
   100% { transform: scale(1) rotate(0deg); }
 }
 
 .eating-anim {
-  animation: eating 0.3s ease-in-out infinite;
+  animation: eating 0.4s ease-in-out infinite;
 }
 
 /* 按压效果 */
