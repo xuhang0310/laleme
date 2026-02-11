@@ -8,18 +8,51 @@
     <!-- 卡通小狗形象 -->
     <image 
       class="pet-image" 
-      :class="{ 'breathing': !isInteracting, 'squeezed': isPressed }"
-      src="/static/puppy_katong.png" 
+      :class="{ 
+        'breathing': !isInteracting && status !== 'eating', 
+        'squeezed': isPressed,
+        'eating-anim': status === 'eating'
+      }"
+      :src="petImageSrc" 
       mode="aspectFit"
     ></image>
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, computed } from 'vue'
+
+const props = defineProps({
+  status: {
+    type: String,
+    default: 'normal' // normal, eating, happy, sad/hungry
+  }
+})
 
 const isPressed = ref(false)
 const isInteracting = ref(false)
+
+// 动态计算图片路径
+const petImageSrc = computed(() => {
+  // 简单映射
+  if (props.status === 'sad' || props.status === 'hungry') {
+    return '/static/puppy_hugry.png'
+  }
+  // eating 状态暂时也用 katong，配合动画，或者如果有专门的 eating 图可以换
+  // happy 状态也用 katong
+  return '/static/puppy_katong.png'
+})
+
+// 监听状态变化，触发特殊动画
+watch(() => props.status, (newVal) => {
+  if (newVal === 'eating') {
+    isInteracting.value = true
+    // 进食动画持续时间
+    setTimeout(() => {
+      // 父组件负责切回 normal
+    }, 2000)
+  }
+})
 
 const handleTouchStart = () => {
   isPressed.value = true
@@ -78,6 +111,19 @@ const emit = defineEmits(['interact'])
 
 .breathing {
   animation: breathe 3s ease-in-out infinite;
+}
+
+/* 进食动画：快速咀嚼/弹跳 */
+@keyframes eating {
+  0% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.05) rotate(-2deg); }
+  50% { transform: scale(1) rotate(0deg); }
+  75% { transform: scale(1.05) rotate(2deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.eating-anim {
+  animation: eating 0.3s ease-in-out infinite;
 }
 
 /* 按压效果 */

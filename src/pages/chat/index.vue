@@ -7,14 +7,9 @@
 
     <!-- 自定义导航栏 -->
     <view class="custom-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="nav-content">
-        <view class="back-btn" @click="handleBack">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 19.9201L8.47997 13.4001C7.70997 12.6301 7.70997 11.3701 8.47997 10.6001L15 4.08008" stroke="white" stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </view>
+      <view class="nav-content" @click="handleBack">
+         <image src="../../static/back-white.png" style="width: 36rpx; height: 36rpx; margin-right: 12rpx;" mode="aspectFit" />
         <text class="nav-title">巴迪乐园</text>
-        <view class="nav-placeholder"></view> <!-- 占位，保持标题居中 -->
       </view>
     </view>
 
@@ -39,43 +34,38 @@
       </view>
 
       <!-- 小狗组件 (卡通形象) -->
-      <PetCartoon @interact="handlePetTouch" />
+      <PetCartoon :status="petStatus" @interact="handlePetTouch" />
+    </view>
+
+    <!-- 领狗粮弹窗 -->
+    <FoodActionSheet 
+      v-model:visible="showFoodSheet" 
+      @claim-success="handleClaimSuccess"
+    />
+
+    <!-- 投喂动画元素 -->
+    <view v-if="isFlying" class="flying-food">
+      <image src="/static/gouliang.png" mode="aspectFit" class="fly-img" />
     </view>
 
     <!-- 底部操作栏 -->
     <view class="bottom-bar">
       <!-- 左侧：领狗粮 -->
       <view class="tool-item" @click="handleGetFood">
-        <view class="icon-circle secondary">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 17V11C20 7.13 16.42 4 12 4C7.58 4 4 7.13 4 11V17" stroke="#8D6E63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 22C14.2091 22 16 20.2091 16 18H8C8 20.2091 9.79086 22 12 22Z" fill="#8D6E63"/>
-            <path d="M8 18H16" stroke="#8D6E63" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </view>
-        <text class="tool-label">领狗粮</text>
+        <image src="/static/gouliang.png" class="tool-icon" mode="aspectFit" />
+ 
       </view>
 
       <!-- 中间：喂食 (大按钮) -->
-      <view class="tool-item main-action" @click="handleFeed">
-        <view class="icon-circle primary">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="white" fill-opacity="0.3"/>
-            <path d="M17 13H15V11H17V9H15V7H13V9H11V7H9V9H7V11H9V13H7V15H9V17H11V15H13V17H15V15H17V13Z" fill="white"/>
-          </svg>
-        </view>
-        <text class="tool-label">喂食</text>
+      <view class="tool-item" @click="handleFeed">
+         <image src="/static/chifan.png" class="tool-icon large" mode="aspectFit" />
+        <text class="tool-label stroke-text">喂食</text>
       </view>
 
       <!-- 右侧：聊天 -->
       <view class="tool-item" @click="handleChat">
-        <view class="icon-circle secondary">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M17 18.25H21.5V12C21.5 6.2 17.25 2 12 2C6.75 2 2.5 6.2 2.5 12C2.5 17.8 6.75 22 12 22C13.25 22 14.5 21.75 15.5 21.25L17 22V18.25Z" stroke="#5D4037" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8.5 12H15.5" stroke="#5D4037" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </view>
-        <text class="tool-label">聊天</text>
+           <image src="/static/play.png" class="tool-icon" mode="aspectFit" />
+
       </view>
     </view>
   </view>
@@ -84,12 +74,19 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import PetCartoon from '@/components/PetCartoon.vue'
+import FoodActionSheet from '@/components/FoodActionSheet.vue'
+import { useFoodSystem } from '@/composables/useFoodSystem'
+
+const { feedPet } = useFoodSystem()
 
 // 状态栏高度适配
 const statusBarHeight = ref(20)
 
 // 状态
 const showBubble = ref(true)
+const showFoodSheet = ref(false)
+const petStatus = ref('normal') // normal, eating, sad
+const isFlying = ref(false) // 投喂动画开关
 const currentMessage = ref('主人，你终于来看我啦！')
 
 onMounted(() => {
@@ -141,12 +138,74 @@ const handlePetTouch = () => {
 
 // 按钮功能
 const handleGetFood = () => {
-  uni.showToast({ title: '任务中心开发中...', icon: 'none' })
+  showFoodSheet.value = true
+}
+
+const handleClaimSuccess = (amount) => {
+  // 可以播放音效或做一些额外的动画
+  // 暂时不需要额外的逻辑，因为 toast 和数据更新已经在组件内完成了
+  // 如果想让小狗说句话：
+  currentMessage.value = `哇！又有 ${amount}g 饭饭啦！`
+  showBubble.value = true
 }
 
 const handleFeed = () => {
-  uni.showToast({ title: '投喂成功！+10 亲密度', icon: 'success' })
-  // 这里未来可以触发进食动画
+  if (petStatus.value === 'eating') return // 防止连点
+
+  const result = feedPet()
+  
+  if (!result.success) {
+    if (result.code === 'INSUFFICIENT_FUNDS') {
+      petStatus.value = 'sad' // 切换到伤心/饥饿图
+      currentMessage.value = '肚子好饿，可是没有粮了...'
+      showBubble.value = true
+      
+      uni.showModal({
+        title: '粮仓告急',
+        content: result.msg,
+        confirmText: '去领粮',
+        success: (res) => {
+          if (res.confirm) {
+            handleGetFood()
+          }
+          // 延迟恢复正常
+          setTimeout(() => { petStatus.value = 'normal' }, 2000)
+        }
+      })
+    } else {
+      uni.showToast({ title: result.msg, icon: 'none' })
+    }
+    return
+  }
+  
+  // 成功
+  // 1. 播放飞入动画
+  isFlying.value = true
+  
+  // 2. 震动
+  uni.vibrateShort()
+
+  // 3. 动画结束后切换小狗状态
+  setTimeout(() => {
+    isFlying.value = false
+    petStatus.value = 'eating'
+    currentMessage.value = '好香好香！最爱主人了！'
+    showBubble.value = true
+    
+    // 提示
+    let tip = `投喂成功`
+    if (result.expDelta > 0) {
+      tip += `，亲密度+${result.expDelta}`
+    } else {
+      tip += `，饱食度+${result.hungerDelta}`
+    }
+    uni.showToast({ title: tip, icon: 'none' })
+    
+    // 恢复正常
+    setTimeout(() => {
+      petStatus.value = 'normal'
+    }, 2000)
+  }, 600) // 飞行时间 0.6s
 }
 
 const handleChat = () => {
@@ -206,8 +265,15 @@ const handleMore = () => {
   height: 44px; /* 标准导航栏高度 */
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 30rpx;
+  justify-content: flex-start; /* 左对齐 */
+  padding: 0 24rpx; /* 调整左边距 */
+}
+
+.nav-title {
+  color: #fff;
+  font-size: 34rpx;
+  font-weight: 500;
+  margin-left: 4rpx; /* 标题与箭头的间距 */
 }
 
 .back-btn {
@@ -307,21 +373,50 @@ const handleMore = () => {
   
   .bubble-arrow {
     position: absolute;
-    bottom: -12rpx;
+    bottom: -16rpx;
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 12rpx solid transparent;
-    border-right: 12rpx solid transparent;
-    border-top: 12rpx solid #fff;
+    border-left: 16rpx solid transparent;
+    border-right: 16rpx solid transparent;
+    border-top: 16rpx solid #fff;
+  }
+}
+
+/* 飞入动画 */
+.flying-food {
+  position: absolute;
+  bottom: 150rpx; /* 起点：底部按钮附近 */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
+  animation: flyToMouth 0.6s ease-in forwards;
+  pointer-events: none;
+
+  .fly-img {
+    width: 60rpx;
+    height: 60rpx;
+  }
+}
+
+@keyframes flyToMouth {
+  0% {
+    bottom: 150rpx;
+    opacity: 1;
+    transform: translateX(-50%) scale(0.5);
+  }
+  100% {
+    bottom: 50%; /* 终点：屏幕中间偏上 (嘴巴位置) */
+    opacity: 0.8;
+    transform: translateX(-50%) scale(1);
   }
 }
 
 /* 底部操作栏 */
 .bottom-bar {
   position: absolute;
-  bottom: 60rpx;
+  bottom: 80rpx; /* 稍微抬高 */
   left: 40rpx;
   right: 40rpx;
   z-index: 10;
@@ -334,37 +429,38 @@ const handleMore = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
   
-  .icon-circle {
-    width: 100rpx;
-    height: 100rpx;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 12rpx;
-    box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.15);
-    background: #fff;
+  .tool-icon {
+    width: 120rpx;
+    height: 120rpx;
+    margin-bottom: -10rpx;
+    filter: drop-shadow(0 4rpx 8rpx rgba(0,0,0,0.2));
     transition: transform 0.1s;
     
     &:active {
-      transform: scale(0.95);
+      transform: scale(0.9);
     }
-    
-    &.primary {
-      background: linear-gradient(135deg, #FF7043 0%, #F4511E 100%);
-      width: 130rpx;
-      height: 130rpx;
-      margin-bottom: 20rpx;
-      box-shadow: 0 8rpx 20rpx rgba(244, 81, 30, 0.4);
+
+    &.large {
+      width: 140rpx;
+      height: 140rpx;
     }
   }
   
   .tool-label {
-    font-size: 26rpx;
+    font-size: 32rpx; /* 字体加大 */
     color: #fff;
-    text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.3);
-    font-weight: 600;
+    font-weight: 900;
+    z-index: 2;
+    letter-spacing: 2rpx;
+    /* 描边效果模拟 */
+    text-shadow: 
+      -3rpx -3rpx 0 #4E342E,  
+       3rpx -3rpx 0 #4E342E,
+      -3rpx  3rpx 0 #4E342E,
+       3rpx  3rpx 0 #4E342E,
+       0 4rpx 8rpx rgba(0,0,0,0.5);
   }
 }
 </style>

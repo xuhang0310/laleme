@@ -268,12 +268,70 @@ const saveRecord = () => {
   }
 
   const records = uni.getStorageSync('poop_records') || []
-  records.push(record)
   
-  try {
-      uni.setStorageSync('poop_records', records)
-      uni.showToast({
-        title: '已记录',
+  // --- Dog Food Reward Logic (Robust Version) ---
+  const todayStr = new Date().toLocaleDateString()
+  
+  // Get User State (with migration support)
+  let userState = uni.getStorageSync('user_state') || {
+      food: uni.getStorageSync('user_food') || 0,
+      dailyRecordCount: 0,
+      lastRecordDate: '',
+      pendingFood: 0 // 新增：待领取的狗粮
+  }
+  
+  // Reset daily count if it's a new day
+  if (userState.lastRecordDate !== todayStr) {
+      userState.dailyRecordCount = 0
+      userState.lastRecordDate = todayStr
+      // pendingFood 不清零？还是清零？
+      // 根据 PLAN.md "今日产出"，通常建议跨天不清零，或者清零。
+      // 为了用户体验，建议不清零，直到用户领取。
+      // 但 PLAN.md 说 "数据作废"，通常指领取后作废。
+      // 这里的逻辑先保持简单：只重置计数器，待领取的钱如果不领，第二天还在（作为积蓄），或者第二天就没了？
+      // PLAN.md 提到 "今日待领取"，隐含意思可能是当天的。
+      // 咱们暂时保留 pendingFood，不因跨天而删除，避免用户损失。
+  }
+  
+  const currentCount = userState.dailyRecordCount
+  
+  let reward = 0
+  if (currentCount === 0) reward = 40       // 1st record of the day
+  else if (currentCount === 1) reward = 10  // 2nd record
+  else if (currentCount === 2) reward = 5   // 3rd record
+  
+  // 将奖励存入 pendingFood，而不是直接进入 food
+  if (reward > 0) {
+      // 暂时不检查仓库上限，因为是存入“待领取”池
+      // 只有在真正领取时才检查仓库上限
+      if (!userState.pendingFood) userState.pendingFood = 0
+      userState.pendingFood += reward
+  }
+  
+  // Increment daily count
+  userState.dailyRecordCount += 1
+  
+  // Save updated state
+  uni.setStorageSync('user_state', userState)
+  // Keep legacy key synced for now (food 暂时不变)
+  uni.setStorageSync('user_food', userState.food)
+  // -----------------------------
+ 
+   records.push(record)
+   
+   try {
+       uni.setStorageSync('poop_records', records)
+       
+       let toastTitle = '已记录'
+       
+       if (reward > 0) {
+           toastTitle = `已产出 ${reward}g 狗粮`
+       } else if (currentCount >= 3) {
+           toastTitle = '已记录 (今日奖励已领完)'
+       }
+       
+       uni.showToast({
+        title: toastTitle,
         icon: 'success'
       })
     
