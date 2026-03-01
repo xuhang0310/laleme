@@ -162,17 +162,15 @@ $shadow-float: 0 16rpx 48rpx rgba(0, 0, 0, 0.10);
   flex: 1;
   padding: 12rpx 0;
   transition: transform 0.15s ease;
+}
 
-  &:active {
-    transform: scale(0.92);
-  }
+.nav-item:active {
+  transform: scale(0.92);
+}
 
-  &.active {
-    .nav-text {
-      color: $color-primary;
-      font-weight: 600;
-    }
-  }
+.nav-item.active .nav-text {
+  color: $color-primary;
+  font-weight: 600;
 }
 
 .nav-item-hover {
@@ -219,11 +217,11 @@ $shadow-float: 0 16rpx 48rpx rgba(0, 0, 0, 0.10);
   top: -40rpx;
   box-shadow: 0 8rpx 24rpx rgba(143, 179, 160, 0.4);
   transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
 
-  &:active {
-    transform: scale(0.92);
-    box-shadow: 0 4rpx 12rpx rgba(143, 179, 160, 0.3);
-  }
+.center-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 4rpx 12rpx rgba(143, 179, 160, 0.3);
 }
 
 .center-btn-hover {

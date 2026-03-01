@@ -361,13 +361,13 @@ $shadow-lg: 0 12rpx 40rpx rgba(0, 0, 0, 0.08);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
 
-  &.long-text {
-    font-size: 26rpx;
-    color: $text-secondary;
-    white-space: normal;
-    line-height: 1.5;
-  }
+.snapshot-value.long-text {
+  font-size: 26rpx;
+  color: $text-secondary;
+  white-space: normal;
+  line-height: 1.5;
 }
 
 /* 状态卡片滚动区 */
@@ -391,33 +391,33 @@ $shadow-lg: 0 12rpx 40rpx rgba(0, 0, 0, 0.08);
   background: $bg-card;
   border-radius: $radius-xl;
   box-shadow: $shadow-sm;
+}
 
-  .status-icon {
-    width: 80rpx;
-    height: 80rpx;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16rpx;
+.status-card .status-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+}
 
-    &.happy { background: rgba(255, 214, 165, 0.3); }
-    &.hunger { background: rgba(232, 184, 120, 0.3); }
-    &.health { background: rgba(124, 179, 147, 0.3); }
-  }
+.status-card .status-icon.happy { background: rgba(255, 214, 165, 0.3); }
+.status-card .status-icon.hunger { background: rgba(232, 184, 120, 0.3); }
+.status-card .status-icon.health { background: rgba(124, 179, 147, 0.3); }
 
-  .status-label {
-    font-size: 24rpx;
-    color: $text-muted;
-    margin-bottom: 8rpx;
-  }
+.status-card .status-label {
+  font-size: 24rpx;
+  color: $text-muted;
+  margin-bottom: 8rpx;
+}
 
-  .status-value {
-    font-size: 36rpx;
-    color: $text-primary;
-    font-weight: 700;
-    margin-bottom: 12rpx;
-  }
+.status-card .status-value {
+  font-size: 36rpx;
+  color: $text-primary;
+  font-weight: 700;
+  margin-bottom: 12rpx;
 }
 
 .mini-progress {
@@ -426,13 +426,13 @@ $shadow-lg: 0 12rpx 40rpx rgba(0, 0, 0, 0.08);
   background: $bg-section;
   border-radius: 4rpx;
   overflow: hidden;
+}
 
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
-    border-radius: 4rpx;
-    transition: width 0.3s ease;
-  }
+.mini-progress .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
 }
 
 /* 每日贴士 */
@@ -459,20 +459,20 @@ $shadow-lg: 0 12rpx 40rpx rgba(0, 0, 0, 0.08);
 
 .tips-content {
   flex: 1;
+}
 
-  .tips-title {
-    display: block;
-    font-size: 30rpx;
-    color: $text-primary;
-    font-weight: 600;
-    margin-bottom: 8rpx;
-  }
+.tips-content .tips-title {
+  display: block;
+  font-size: 30rpx;
+  color: $text-primary;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
 
-  .tips-desc {
-    display: block;
-    font-size: 26rpx;
-    color: $text-secondary;
-    line-height: 1.5;
-  }
+.tips-content .tips-desc {
+  display: block;
+  font-size: 26rpx;
+  color: $text-secondary;
+  line-height: 1.5;
 }
 </style>

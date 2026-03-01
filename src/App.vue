@@ -1,8 +1,10 @@
 <script>
 import { usePetStore } from '@/stores/pet'
+import { useUserStore } from '@/stores/user'
+import { useAuthStore } from '@/stores/auth'
 
 export default {
-  onLaunch: function () {
+  onLaunch: async function () {
     console.log('App Launch')
 
     // --- Data Migration (Legacy to Pinia) ---
@@ -41,6 +43,27 @@ export default {
       }
     } catch (e) {
       console.error('Migration failed:', e)
+    }
+
+    // --- 检查登录状态并同步云端数据 ---
+    try {
+      const authStore = useAuthStore()
+      await authStore.checkLoginStatus()
+
+      // 如果已登录，同步云端数据
+      if (authStore.isLoggedIn) {
+        const userStore = useUserStore()
+        const petStore = usePetStore()
+        await Promise.all([
+          userStore.syncFromCloud(),
+          petStore.syncFromCloud()
+        ])
+        console.log('已登录用户数据同步完成')
+      } else {
+        console.log('用户未登录，使用本地数据')
+      }
+    } catch (e) {
+      console.error('登录检查或数据同步失败:', e)
     }
   },
   onShow: function () {

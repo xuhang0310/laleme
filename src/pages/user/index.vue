@@ -30,14 +30,32 @@
         <!-- Account -->
         <text class="section-label">账户</text>
         <view class="list-group">
+          <!-- Login Status Section -->
+          <view class="login-status-section" v-if="!authStore.isLoggedIn">
+            <text class="login-desc">未登录</text>
+            <text class="login-tip">登录后同步萌宠数据</text>
+            <button class="login-btn" @click="handleLogin">
+              <text>微信一键登录</text>
+            </button>
+          </view>
+
+          <view class="user-info-section" v-else>
+            <view class="info-row">
+              <text class="info-label"> openid</text>
+              <text class="info-value">{{ authStore.openid ? authStore.openid.substring(0, 12) + '...' : '-' }}</text>
+            </view>
+            <view class="info-row">
+              <text class="info-label">登录状态</text>
+              <text class="info-value logged-in">已登录</text>
+            </view>
+            <button class="logout-btn-small" @click="handleLogout">
+              <text>退出登录</text>
+            </button>
+          </view>
+
+          <!-- 萌宠资料设置 -->
           <view class="list-item" @click="handleItemClick('profile')">
             <view class="item-left">
-              <!-- <view class="icon-box green-light">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="#00E676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="#00E676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </view> -->
               <view class="text-content">
                 <text class="item-title">萌宠资料设置</text>
                 <text class="item-subtitle">更新宠物名称和简介</text>
@@ -181,8 +199,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import FloatingTabBar from '@/components/FloatingTabBar.vue'
 
+const authStore = useAuthStore()
 const notificationsEnabled = ref(true)
 
 const goBack = () => {
@@ -191,6 +211,28 @@ const goBack = () => {
 
 const toggleNotifications = (e) => {
   notificationsEnabled.value = e.detail.value
+}
+
+const handleLogin = () => {
+  uni.navigateTo({
+    url: '/pages/login/index'
+  })
+}
+
+const handleLogout = () => {
+  uni.showModal({
+    title: '确认退出',
+    content: '退出登录后数据将仅存储在本地',
+    success: (res) => {
+      if (res.confirm) {
+        authStore.logout()
+        uni.showToast({
+          title: '已退出登录',
+          icon: 'success'
+        })
+      }
+    }
+  })
 }
 
 const handleItemClick = (type) => {
@@ -376,6 +418,102 @@ page {
 .item-subtitle {
   font-size: 22rpx;
   color: #9CA3AF;
+}
+
+/* Login Status Section */
+.login-status-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 30rpx;
+  background: linear-gradient(135deg, #F9F7F4 0%, #F0EBE3 100%);
+  border-radius: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.login-desc {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1A1D26;
+  margin-bottom: 8rpx;
+}
+
+.login-tip {
+  font-size: 24rpx;
+  color: #9CA3AF;
+  margin-bottom: 24rpx;
+}
+
+.login-btn {
+  width: 100%;
+  height: 80rpx;
+  background: linear-gradient(135deg, #07C160 0%, #05A850 100%);
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.3);
+}
+
+.login-btn::after {
+  display: none;
+}
+
+.login-btn text {
+  font-size: 28rpx;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.user-info-section {
+  padding: 30rpx;
+  background: #F9F7F4;
+  border-radius: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #9CA3AF;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #1A1D26;
+  font-weight: 500;
+}
+
+.info-value.logged-in {
+  color: #07C160;
+}
+
+.logout-btn-small {
+  margin-top: 20rpx;
+  height: 64rpx;
+  background: #FFEBEE;
+  border-radius: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.logout-btn-small::after {
+  display: none;
+}
+
+.logout-btn-small text {
+  font-size: 24rpx;
+  color: #FF5252;
+  font-weight: 500;
 }
 
 .item-right {

@@ -93,22 +93,22 @@ const switchTab = (path) => {
   opacity: 0.5;
   filter: grayscale(100%);
   transition: all 0.2s;
-  
-  &.active {
-    opacity: 1;
-    filter: grayscale(0%);
-    transform: scale(1.1);
-  }
+}
+
+.icon.active {
+  opacity: 1;
+  filter: grayscale(0%);
+  transform: scale(1.1);
 }
 
 .text {
   font-size: 10px;
   color: #999;
-  
-  &.active {
-    color: #1A1D26;
-    font-weight: 600;
-  }
+}
+
+.text.active {
+  color: #1A1D26;
+  font-weight: 600;
 }
 
 /* Special styling for center button */
@@ -130,10 +130,10 @@ const switchTab = (path) => {
   justify-content: center;
   align-items: center;
   box-shadow: 0 -4px 10px rgba(249, 224, 49, 0.3);
-  
-  &:active {
-    transform: translateX(-50%) scale(0.95);
-  }
+}
+
+.center-item:active {
+  transform: translateX(-50%) scale(0.95);
 }
 
 .center-text {

@@ -250,19 +250,19 @@ const handleReset = () => {
   font-weight: bold;
   border-radius: 48rpx;
   border: none;
-  
-  &.disabled {
-    background: #E0E0E0;
-    color: #999;
-  }
-  
-  &:active {
-    opacity: 0.9;
-  }
-  
-  &::after {
-    border: none;
-  }
+}
+
+.btn-claim.disabled {
+  background: #E0E0E0;
+  color: #999;
+}
+
+.btn-claim:active {
+  opacity: 0.9;
+}
+
+.btn-claim::after {
+  border: none;
 }
 
 @keyframes fadeIn {

@@ -387,45 +387,45 @@ const handleMore = () => {
   opacity: 0;
   transform: translateY(10rpx);
   transition: all 0.3s ease;
-  
-  &.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
-  text {
-    font-size: 28rpx;
-    color: #333;
-    line-height: 1.4;
-  }
-  
-  .bubble-arrow {
-    position: absolute;
-    bottom: -16rpx;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 16rpx solid transparent;
-    border-right: 16rpx solid transparent;
-    border-top: 16rpx solid #fff;
-  }
+}
+
+.chat-bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chat-bubble text {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.4;
+}
+
+.chat-bubble .bubble-arrow {
+  position: absolute;
+  bottom: -16rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 16rpx solid transparent;
+  border-right: 16rpx solid transparent;
+  border-top: 16rpx solid #fff;
 }
 
 /* 飞入动画 */
 .flying-food {
   position: absolute;
-  bottom: 150rpx; /* 起点：底部按钮附近 */
+  bottom: 150rpx;
   left: 50%;
   transform: translateX(-50%);
   z-index: 99;
   animation: flyToMouth 0.6s ease-in forwards;
   pointer-events: none;
+}
 
-  .fly-img {
-    width: 60rpx;
-    height: 60rpx;
-  }
+.flying-food .fly-img {
+  width: 60rpx;
+  height: 60rpx;
 }
 
 @keyframes flyToMouth {
@@ -458,38 +458,37 @@ const handleMore = () => {
   flex-direction: column;
   align-items: center;
   position: relative;
-  
-  .tool-icon {
-    width: 150rpx;
-    height: 150rpx;
-    margin-bottom: -10rpx;
-    filter: drop-shadow(0 4rpx 8rpx rgba(0,0,0,0.2));
-    transition: transform 0.1s;
-    
-    &:active {
-      transform: scale(0.9);
-    }
+}
 
-    &.large {
-      width: 190rpx;
-      height: 190rpx;
-    }
-  }
-  
-  .tool-label {
-    font-size: 32rpx; /* 字体加大 */
-    color: #fff;
-    font-weight: 900;
-    z-index: 2;
-    letter-spacing: 2rpx;
-    /* 描边效果模拟 */
-    text-shadow: 
-      -3rpx -3rpx 0 #4E342E,  
-       3rpx -3rpx 0 #4E342E,
-      -3rpx  3rpx 0 #4E342E,
-       3rpx  3rpx 0 #4E342E,
-       0 4rpx 8rpx rgba(0,0,0,0.5);
-  }
+.tool-item .tool-icon {
+  width: 150rpx;
+  height: 150rpx;
+  margin-bottom: -10rpx;
+  filter: drop-shadow(0 4rpx 8rpx rgba(0,0,0,0.2));
+  transition: transform 0.1s;
+}
+
+.tool-item .tool-icon:active {
+  transform: scale(0.9);
+}
+
+.tool-item .tool-icon.large {
+  width: 190rpx;
+  height: 190rpx;
+}
+
+.tool-item .tool-label {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: 900;
+  z-index: 2;
+  letter-spacing: 2rpx;
+  text-shadow:
+    -3rpx -3rpx 0 #4E342E,
+     3rpx -3rpx 0 #4E342E,
+    -3rpx  3rpx 0 #4E342E,
+     3rpx  3rpx 0 #4E342E,
+     0 4rpx 8rpx rgba(0,0,0,0.5);
 }
 
 .status-panel {
@@ -523,10 +522,10 @@ const handleMore = () => {
   height: 100%;
   border-radius: 6rpx;
   transition: width 0.5s ease;
-  
-  &.hunger { background: #FF9800; }
-  &.love { background: #E91E63; }
 }
+
+.progress-fill.hunger { background: #FF9800; }
+.progress-fill.love { background: #E91E63; }
 .level-tag {
   font-size: 20rpx;
   color: #fff;

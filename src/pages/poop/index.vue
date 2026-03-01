@@ -269,15 +269,17 @@ onShow(() => {
   align-items: center;
   justify-content: center;
   padding-top: 60px;
-  .empty-img {
-    width: 160px;
-    margin-bottom: 16px;
-    opacity: 0.5;
-  }
-  .empty-text {
-    font-size: 14px;
-    color: #9CA3AF;
-  }
+}
+
+.empty-state .empty-img {
+  width: 160px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state .empty-text {
+  font-size: 14px;
+  color: #9CA3AF;
 }
 
 .record-item {
@@ -286,122 +288,123 @@ onShow(() => {
   border-radius: 16px;
   margin-bottom: 16px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
 
-  .item-content {
-    background: #FFFFFF;
-    padding: 16px;
-    transition: transform 0.2s ease;
-    position: relative;
-    z-index: 2;
-    
-    &.swiped {
-      transform: translateX(-70px);
-    }
-    
-    &:active {
-      background-color: #FAFAFA;
-    }
-  }
+.record-item .item-content {
+  background: #FFFFFF;
+  padding: 16px;
+  transition: transform 0.2s ease;
+  position: relative;
+  z-index: 2;
+}
 
-  .delete-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 70px;
-    background: #EF4444;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-    font-size: 14px;
-    font-weight: 500;
-  }
+.record-item .item-content.swiped {
+  transform: translateX(-70px);
+}
 
-  .item-main {
-    display: flex;
-    align-items: flex-start;
-  }
-  
-  .time-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-right: 16px;
-    min-width: 45px;
-    padding-top: 2px;
-    
-    .date-text {
-      font-size: 12px;
-      color: #9CA3AF;
-      margin-bottom: 2px;
-    }
-    .time-text {
-      font-size: 16px;
-      font-weight: 700;
-      color: #1A1D26;
-    }
-  }
-  
-  .info-col {
-    flex: 1;
-    margin-right: 10px;
-    
-    .tags-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    
-    .status-tag {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 6px;
-      background: #F3F4F6;
-      color: #4B5563;
-      
-      &.status-warning { background: #FEF2F2; color: #EF4444; }
-      &.status-info { background: #F0F9FF; color: #0EA5E9; }
-    }
-    
-    .feeling-row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 6px;
-      
-      .feeling-text {
-        font-size: 13px;
-        color: #1A1D26;
-        font-weight: 500;
-        
-        .feeling-emoji {
-          margin-right: 4px;
-        }
-      }
-      
-      .duration-text {
-        font-size: 13px;
-        color: #6B7280;
-        margin-left: 4px;
-      }
-    }
-    
-    .note-text {
-      font-size: 13px;
-      color: #6B7280;
-      line-height: 1.4;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-      overflow: hidden;
-    }
-  }
-  
-  .photo-col {
-    /* Removed */
-  }
+.record-item .item-content:active {
+  background-color: #FAFAFA;
+}
+
+.record-item .delete-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 70px;
+  background: #EF4444;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.record-item .item-main {
+  display: flex;
+  align-items: flex-start;
+}
+
+.record-item .time-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 16px;
+  min-width: 45px;
+  padding-top: 2px;
+}
+
+.record-item .time-col .date-text {
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-bottom: 2px;
+}
+
+.record-item .time-col .time-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1D26;
+}
+
+.record-item .info-col {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.record-item .info-col .tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.record-item .info-col .status-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #F3F4F6;
+  color: #4B5563;
+}
+
+.record-item .info-col .status-tag.status-warning { background: #FEF2F2; color: #EF4444; }
+.record-item .info-col .status-tag.status-info { background: #F0F9FF; color: #0EA5E9; }
+
+.record-item .info-col .feeling-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.record-item .info-col .feeling-row .feeling-text {
+  font-size: 13px;
+  color: #1A1D26;
+  font-weight: 500;
+}
+
+.record-item .info-col .feeling-row .feeling-text .feeling-emoji {
+  margin-right: 4px;
+}
+
+.record-item .info-col .feeling-row .duration-text {
+  font-size: 13px;
+  color: #6B7280;
+  margin-left: 4px;
+}
+
+.record-item .info-col .note-text {
+  font-size: 13px;
+  color: #6B7280;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.record-item .photo-col {
+  /* Removed */
 }
 
 .fab-btn {

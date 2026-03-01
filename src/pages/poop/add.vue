@@ -184,9 +184,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
+import { useAuthStore } from '@/stores/auth'
+import { recordAPI } from '@/services/api'
 import { getNavBarHeight } from '@/utils/system'
 
 const userStore = useUserStore()
+const authStore = useAuthStore()
 const safeAreaTop = ref(88)
 
 const goBack = () => {
@@ -260,7 +263,7 @@ const bindTimeChange = (e) => {
   time.value = e.detail.value
 }
 
-const saveRecord = () => {
+const saveRecord = async () => {
   const selectedFeeling = feelings[feelingIndex.value]
   let duration = selectedFeeling.title
 
@@ -290,8 +293,6 @@ const saveRecord = () => {
     timestamp: new Date().getTime()
   }
 
-  const records = uni.getStorageSync('poop_records') || []
-
   // Dog Food Reward Logic
   userStore.checkDailyReset()
 
@@ -302,16 +303,74 @@ const saveRecord = () => {
   else if (currentCount === 1) reward = 10
   else if (currentCount === 2) reward = 5
 
-  if (reward > 0) {
-    userStore.addPendingFood(reward)
-  } else {
-    userStore.addPendingFood(0)
-  }
+  // 根据登录状态决定存储方式
+  if (authStore.isLoggedIn) {
+    // 已登录：调用云端 API
+    uni.showLoading({ title: '保存中...' })
+    try {
+      const res = await recordAPI.addRecord({
+        ...record,
+        rewardFood: reward
+      })
 
+      uni.hideLoading()
+
+      if (res.success) {
+        // 更新本地 store
+        userStore.addPendingFood(reward)
+
+        // 本地备份
+        const records = uni.getStorageSync('poop_records') || []
+        records.push({ ...record, _id: res.recordId })
+        uni.setStorageSync('poop_records', records)
+
+        let toastTitle = '已记录'
+        if (reward > 0) {
+          toastTitle = `已产出 ${reward}g 狗粮`
+        } else if (currentCount >= 3) {
+          toastTitle = '已记录 (今日奖励已领完)'
+        }
+
+        uni.showToast({
+          title: toastTitle,
+          icon: 'success',
+          duration: 1500
+        })
+
+        setTimeout(() => {
+          uni.reLaunch({
+            url: '/pages/index/index'
+          })
+        }, 1500)
+      } else {
+        throw new Error(res.msg || '保存失败')
+      }
+    } catch (e) {
+      uni.hideLoading()
+      console.error('保存记录失败:', e)
+      uni.showToast({
+        title: '保存失败，已转为本地存储',
+        icon: 'none',
+        duration: 2000
+      })
+
+      // 云端失败，降级为本地存储
+      fallbackToLocalSave(record, reward, currentCount)
+    }
+  } else {
+    // 未登录：仅本地存储
+    fallbackToLocalSave(record, reward, currentCount)
+  }
+}
+
+// 本地存储降级方案
+const fallbackToLocalSave = (record, reward, currentCount) => {
+  const records = uni.getStorageSync('poop_records') || []
   records.push(record)
 
   try {
     uni.setStorageSync('poop_records', records)
+    userStore.addPendingFood(reward)
 
     let toastTitle = '已记录'
 
@@ -464,35 +523,35 @@ page {
   border: 3rpx solid transparent;
   transition: all 0.2s ease;
   cursor: pointer;
+}
 
-  .option-icon-wrapper {
-    width: 80rpx;
-    height: 80rpx;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16rpx;
-    background: $bg-card;
-    transition: all 0.2s ease;
-  }
+.type-option .option-icon-wrapper {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+  background: $bg-card;
+  transition: all 0.2s ease;
+}
 
-  .option-label {
-    font-size: 26rpx;
-    color: $text-secondary;
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
+.type-option .option-label {
+  font-size: 26rpx;
+  color: $text-secondary;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
 
-  &.active {
-    border-color: $color-primary;
-    background: $color-primary-bg;
+.type-option.active {
+  border-color: $color-primary;
+  background: $color-primary-bg;
+}
 
-    .option-label {
-      color: $color-primary-dark;
-      font-weight: 600;
-    }
-  }
+.type-option.active .option-label {
+  color: $color-primary-dark;
+  font-weight: 600;
 }
 
 /* Chips Row */
@@ -516,27 +575,27 @@ page {
   border: 2rpx solid transparent;
   white-space: nowrap;
   transition: all 0.2s ease;
+}
 
-  &.active {
-    background: $color-primary;
-    color: #FFFFFF;
-    border-color: $color-primary;
-    transform: translateY(-2rpx);
-    box-shadow: 0 4rpx 12rpx rgba(143, 179, 160, 0.4);
-  }
+.chip.active {
+  background: $color-primary;
+  color: #FFFFFF;
+  border-color: $color-primary;
+  transform: translateY(-2rpx);
+  box-shadow: 0 4rpx 12rpx rgba(143, 179, 160, 0.4);
+}
 
-  &.color-chip {
-    display: flex;
-    align-items: center;
-    gap: 12rpx;
+.chip.color-chip {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
 
-    .color-dot {
-      width: 24rpx;
-      height: 24rpx;
-      border-radius: 50%;
-      border: 2rpx solid rgba(0, 0, 0, 0.1);
-    }
-  }
+.chip.color-chip .color-dot {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  border: 2rpx solid rgba(0, 0, 0, 0.1);
 }
 
 /* Amount Selector */
@@ -556,28 +615,28 @@ page {
   border-radius: $radius-lg;
   border: 3rpx solid transparent;
   transition: all 0.2s ease;
+}
 
-  .amount-icon-wrapper {
-    width: 70rpx;
-    height: 70rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 12rpx;
-    transition: transform 0.2s ease;
-  }
+.amount-btn .amount-icon-wrapper {
+  width: 70rpx;
+  height: 70rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
+  transition: transform 0.2s ease;
+}
 
-  text {
-    font-size: 26rpx;
-    color: $text-secondary;
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
+.amount-btn text {
+  font-size: 26rpx;
+  color: $text-secondary;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
 
-  &.active {
-    background: $color-primary-bg;
-    border-color: $color-primary;
-  }
+.amount-btn.active {
+  background: $color-primary-bg;
+  border-color: $color-primary;
 }
 
 /* Feeling Grid */
@@ -597,57 +656,57 @@ page {
   border: 3rpx solid transparent;
   transition: all 0.2s ease;
   position: relative;
+}
 
-  &.active {
-    background: $color-primary-bg;
-    border-color: $color-primary;
+.feeling-box.active {
+  background: $color-primary-bg;
+  border-color: $color-primary;
+}
 
-    .feeling-title {
-      color: $color-primary-dark;
-      font-weight: 600;
-    }
-  }
+.feeling-box.active .feeling-title {
+  color: $color-primary-dark;
+  font-weight: 600;
+}
 
-  .feeling-emoji {
-    font-size: 56rpx;
-    margin-bottom: 12rpx;
-  }
+.feeling-box .feeling-emoji {
+  font-size: 56rpx;
+  margin-bottom: 12rpx;
+}
 
-  .feeling-title {
-    font-size: 26rpx;
-    color: $text-secondary;
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
+.feeling-box .feeling-title {
+  font-size: 26rpx;
+  color: $text-secondary;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
 
-  /* Custom input for 5th item */
-  &:nth-child(5) {
-    grid-column: span 2;
-    flex-direction: row;
-    align-items: center;
-    padding: 24rpx 32rpx;
+/* Custom input for 5th item */
+.feeling-box:nth-child(5) {
+  grid-column: span 2;
+  flex-direction: row;
+  align-items: center;
+  padding: 24rpx 32rpx;
+}
 
-    .feeling-emoji {
-      margin-bottom: 0;
-      margin-right: 20rpx;
-    }
+.feeling-box:nth-child(5) .feeling-emoji {
+  margin-bottom: 0;
+  margin-right: 20rpx;
+}
 
-    .feeling-title {
-      margin-bottom: 0;
-      margin-right: 20rpx;
-    }
+.feeling-box:nth-child(5) .feeling-title {
+  margin-bottom: 0;
+  margin-right: 20rpx;
+}
 
-    .custom-input {
-      flex: 1;
-      height: 56rpx;
-      background: $bg-card;
-      border-radius: $radius-sm;
-      padding: 0 20rpx;
-      font-size: 28rpx;
-      color: $text-primary;
-      border: 2rpx solid #E5E7EB;
-    }
-  }
+.feeling-box:nth-child(5) .custom-input {
+  flex: 1;
+  height: 56rpx;
+  background: $bg-card;
+  border-radius: $radius-sm;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: $text-primary;
+  border: 2rpx solid #E5E7EB;
 }
 
 /* Time Picker */
@@ -656,24 +715,24 @@ page {
   justify-content: space-between;
   align-items: center;
   padding: 12rpx 0;
+}
 
-  .time-label {
-    font-size: 28rpx;
-    font-weight: 600;
-    color: $text-primary;
-  }
+.time-picker-row .time-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $text-primary;
+}
 
-  .time-value {
-    display: flex;
-    align-items: center;
-    gap: 12rpx;
+.time-picker-row .time-value {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
 
-    text {
-      font-size: 32rpx;
-      font-weight: 700;
-      color: $color-primary;
-    }
-  }
+.time-picker-row .time-value text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: $color-primary;
 }
 
 /* Tags Container */
@@ -692,13 +751,13 @@ page {
   font-weight: 500;
   border: 2rpx solid transparent;
   transition: all 0.2s ease;
+}
 
-  &.active {
-    background: rgba(217, 136, 136, 0.1);
-    color: $color-error;
-    border-color: rgba(217, 136, 136, 0.3);
-    font-weight: 600;
-  }
+.tag-item.active {
+  background: rgba(217, 136, 136, 0.1);
+  color: $color-error;
+  border-color: rgba(217, 136, 136, 0.3);
+  font-weight: 600;
 }
 
 /* Note Box */
@@ -706,15 +765,15 @@ page {
   background: $bg-section;
   border-radius: $radius-lg;
   padding: 24rpx;
+}
 
-  .note-input {
-    width: 100%;
-    min-height: 100rpx;
-    font-size: 28rpx;
-    color: $text-primary;
-    line-height: 1.5;
-    background: transparent;
-  }
+.note-box .note-input {
+  width: 100%;
+  min-height: 100rpx;
+  font-size: 28rpx;
+  color: $text-primary;
+  line-height: 1.5;
+  background: transparent;
 }
 
 /* Submit Area */
@@ -742,19 +801,19 @@ page {
   border: none;
   box-shadow: 0 8rpx 24rpx rgba(143, 179, 160, 0.4);
   transition: transform 0.1s ease;
+}
 
-  &:active {
-    transform: scale(0.98);
-  }
+.submit-btn:active {
+  transform: scale(0.98);
+}
 
-  &::after {
-    display: none;
-  }
+.submit-btn::after {
+  display: none;
+}
 
-  text {
-    font-size: 32rpx;
-    color: #FFFFFF;
-    font-weight: 600;
-  }
+.submit-btn text {
+  font-size: 32rpx;
+  color: #FFFFFF;
+  font-weight: 600;
 }
 </style>

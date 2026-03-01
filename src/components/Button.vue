@@ -86,10 +86,10 @@ const handleClick = (e) => {
   position: relative;
   background: none;
   padding: 0;
+}
 
-  &::after {
-    display: none;
-  }
+.btn::after {
+  display: none;
 }
 
 .btn-content {

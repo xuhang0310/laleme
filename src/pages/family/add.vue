@@ -128,77 +128,78 @@ const saveMember = () => {
 
 .form-group {
   margin-bottom: 24px;
-  
-  &.no-border {
-    margin-bottom: 0;
-  }
-  
-  .label {
-    font-size: 13px;
-    color: #6B7280;
-    margin-bottom: 10px;
-    display: block;
-    font-weight: 500;
-  }
+}
+
+.form-group.no-border {
+  margin-bottom: 0;
+}
+
+.form-group .label {
+  font-size: 13px;
+  color: #6B7280;
+  margin-bottom: 10px;
+  display: block;
+  font-weight: 500;
 }
 
 .input-wrapper {
   background: #F9FAFB;
   padding: 12px 16px;
   border-radius: 10px;
-  
-  .input {
-    font-size: 14px;
-    width: 100%;
-    color: #1A1D26;
-  }
+}
+
+.input-wrapper .input {
+  font-size: 14px;
+  width: 100%;
+  color: #1A1D26;
 }
 
 .relation-selector {
   display: flex;
   gap: 12px;
-  
-  .relation-item {
-    flex: 1;
-    height: 44px;
-    background: #F3F4F6;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    border: 1px solid transparent;
-    transition: all 0.2s;
-    
-    .relation-text {
-      font-size: 14px;
-      color: #4B5563;
-      font-weight: 500;
-    }
-    
-    &.active {
-      background: #EFF6FF;
-      border-color: #4B6EF6;
-      .relation-text {
-        color: #4B6EF6;
-      }
-    }
-    
-    .check-mark {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      width: 16px;
-      height: 16px;
-      background: #4B6EF6;
-      border-radius: 50%;
-      color: white;
-      font-size: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
+}
+
+.relation-selector .relation-item {
+  flex: 1;
+  height: 44px;
+  background: #F3F4F6;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.relation-selector .relation-item .relation-text {
+  font-size: 14px;
+  color: #4B5563;
+  font-weight: 500;
+}
+
+.relation-selector .relation-item.active {
+  background: #EFF6FF;
+  border-color: #4B6EF6;
+}
+
+.relation-selector .relation-item.active .relation-text {
+  color: #4B6EF6;
+}
+
+.relation-selector .relation-item .check-mark {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 16px;
+  height: 16px;
+  background: #4B6EF6;
+  border-radius: 50%;
+  color: white;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .time-display {
@@ -208,15 +209,16 @@ const saveMember = () => {
   background: #F9FAFB;
   padding: 12px 16px;
   border-radius: 10px;
-  
-  .time-val {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1A1D26;
-  }
-  .arrow {
-    color: #9CA3AF;
-  }
+}
+
+.time-display .time-val {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1A1D26;
+}
+
+.time-display .arrow {
+  color: #9CA3AF;
 }
 
 .footer-action {
@@ -229,20 +231,20 @@ const saveMember = () => {
   padding-bottom: calc(16px + env(safe-area-inset-bottom));
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
   z-index: 10;
-  
-  .save-btn {
-    background: linear-gradient(135deg, #4B6EF6 0%, #2563EB 100%);
-    color: white;
-    border-radius: 24px;
-    font-weight: 600;
-    font-size: 16px;
-    height: 48px;
-    line-height: 48px;
-    border: none;
-    
-    &:active {
-      opacity: 0.9;
-    }
-  }
+}
+
+.footer-action .save-btn {
+  background: linear-gradient(135deg, #4B6EF6 0%, #2563EB 100%);
+  color: white;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 16px;
+  height: 48px;
+  line-height: 48px;
+  border: none;
+}
+
+.footer-action .save-btn:active {
+  opacity: 0.9;
 }
 </style>

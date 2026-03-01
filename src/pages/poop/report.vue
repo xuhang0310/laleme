@@ -553,14 +553,14 @@ page {
   font-size: 40rpx;
   color: $text-primary;
   font-weight: 700;
+}
 
-  &.success {
-    color: $color-success;
-  }
+.stat-value.success {
+  color: $color-success;
+}
 
-  &.good {
-    color: $color-primary;
-  }
+.stat-value.good {
+  color: $color-primary;
 }
 
 .stat-unit {
@@ -616,10 +616,10 @@ page {
   background: $bg-section;
   border-radius: 8rpx 8rpx 0 0;
   transition: height 0.3s ease;
+}
 
-  &.bar-active {
-    background: $color-primary;
-  }
+.bar-fill.bar-active {
+  background: $color-primary;
 }
 
 .day-label {
