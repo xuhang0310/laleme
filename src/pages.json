@@ -1,6 +1,15 @@
 {
 	"pages": [
 		{
+			"path": "pages/splash/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarHidden": true,
+				"animationType": "fade-in",
+				"animationDuration": 300
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationStyle": "custom",

@@ -177,6 +177,7 @@ $shadow-float: 0 16rpx 48rpx rgba(0, 0, 0, 0.10);
 
 .nav-item-hover {
   transform: scale(0.92);
+  transition: transform 0.15s ease;
 }
 
 .nav-icon {
