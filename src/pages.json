@@ -3,55 +3,73 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"animationType": "fade-in",
+				"animationDuration": 200
 			}
 		},
 		{
 			"path": "pages/poop/index",
 			"style": {
-				"navigationBarTitleText": "拉了么"
+				"navigationBarTitleText": "拉了么",
+				"animationType": "slide-in-right",
+				"animationDuration": 200
 			}
 		},
 		{
 			"path": "pages/poop/add",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"animationType": "slide-in-bottom",
+				"animationDuration": 250
 			}
 		},
 		{
 			"path": "pages/poop/report",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"animationType": "slide-in-right",
+				"animationDuration": 200
 			}
 		},
 		{
 			"path": "pages/chat/index",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"animationType": "slide-in-right",
+				"animationDuration": 200
 			}
 		},
 		{
 			"path": "pages/haircut/index",
 			"style": {
-				"navigationBarTitleText": "剪了么"
+				"navigationBarTitleText": "剪了么",
+				"animationType": "slide-in-right",
+				"animationDuration": 200
 			}
 		},
 		{
 			"path": "pages/haircut/detail",
 			"style": {
-				"navigationBarTitleText": "预约理发师"
+				"navigationBarTitleText": "预约理发师",
+				"animationType": "slide-in-right",
+				"animationDuration": 200
 			}
 		},
 		{
 			"path": "pages/user/index",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"animationType": "slide-in-right",
+				"animationDuration": 200
 			}
 		},
 		{
 			"path": "pages/family/add",
 			"style": {
-				"navigationBarTitleText": "添加家人"
+				"navigationBarTitleText": "添加家人",
+				"animationType": "slide-in-bottom",
+				"animationDuration": 250
 			}
 		}
 	],
@@ -59,6 +77,8 @@
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "生活助手",
 		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"backgroundColor": "#F9F7F4",
+		"animationType": "fade-in",
+		"animationDuration": 200
 	}
 }
